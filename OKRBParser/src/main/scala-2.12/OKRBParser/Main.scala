@@ -19,9 +19,8 @@ object Main{
     val df = spark.read
       .excel()
       .load("C:\\Users\\KOma_rash\\Desktop\\Гос закупки\\OKRB.xlsx")
-    df.write.excel()
-    spark.stop()
-
+    df.printSchema()
+    spark.w
   }
 
   // For implicit conversions like converting RDDs to DataFrames
