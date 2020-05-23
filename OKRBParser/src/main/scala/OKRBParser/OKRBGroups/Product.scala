@@ -1,4 +1,4 @@
-package OKRBParser
+package OKRBParser.OKRBGroups
 
 case class Product(section:Int,
                    productClass:Int,

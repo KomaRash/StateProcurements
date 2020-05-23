@@ -9,11 +9,11 @@ lazy val root = project
 lazy val okrbParser = project.in(file("OKRBParser")).settings(
   name := "OKRBParser",
   parserSettings,
-  libraryDependencies++=parserDependency
+  libraryDependencies++=parserDependency,
+  libraryDependencies++=catsDependency
 )
 
 lazy val parserSettings = Seq(
-  scalaVersion := "2.12.0",
   scalacOptions ++= scalacOptionList)
 
 lazy val scalacOptionList = Seq(
@@ -27,11 +27,9 @@ lazy val scalacOptionList = Seq(
   "-encoding",
   "utf8"
 )
-val sparkVersion= "2.4.3"
+lazy val catsDependency=Seq("org.typelevel" %% "cats-core" % "2.0.0")
 lazy val parserDependency=Seq(
-  // https://mvnrepository.com/artifact/com.crealytics/spark-excel
-  "com.crealytics" %% "spark-excel" % "0.12.5" ,
-  "org.apache.spark" %% "spark-core" % sparkVersion,
-  "org.apache.spark" %% "spark-sql" % sparkVersion
+"org.apache.poi" % "poi" % "3.9",
+  "org.apache.poi" % "poi-ooxml" % "3.9"
 )
 
