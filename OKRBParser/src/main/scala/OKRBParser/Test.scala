@@ -1,33 +1,12 @@
 package OKRBParser
 
-/*
-import cats.effect.{Blocker, IO}
-import doobie.util.transactor.Transactor
-
-object Test extends App {
-//"jdbc:mysql://localhost:3306/ StateProcurements?useUnicode=true&serverTimezone=UTC"
-  import doobie.util.ExecutionContexts
-
-  // We need a ContextShift[IO] before we can construct a Transactor[IO]. The passed ExecutionContext
-  // is where nonblocking operations will be executed. For testing here we're using a synchronous EC.
-  implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
-
-  // A transactor that gets connections from java.sql.DriverManager and executes blocking operations
-  // on an our synchronous EC. See the chapter on connection handling for more info.
-  val xa = Transactor.fromDriverManager[IO](
-    "com.mysql.jdbc.Driver",     // driver classname
-    "jdbc:mysql://localhost:3306/ StateProcurements?useUnicode=true&serverTimezone=UTC",     // connect URL (driver-specific)
-    "RootKoma",                  // user
-    "root",                          // password
-    Blocker.liftExecutionContext(ExecutionContexts.synchronous) // just for testing
-  )
-
-}
-*/
-import OKRBParser.Database.MySqlRepository
 import cats.effect._
 import doobie._
 import doobie.hikari._
+import doobie.implicits._
+import doobie.util.transactor.Transactor
+import doobie.util.update.Update
+import fs2.Chunk
 
 object HikariApp extends IOApp {
 
@@ -49,15 +28,30 @@ object HikariApp extends IOApp {
 
 
   def run(args: List[String]): IO[ExitCode] = {
+    def writeToDatabase[F[_]: Sync](chunk: Chunk[Int])(tx: Transactor[F]): F[Int] =
+      {
+        val sql="insert into table_name (test) values (?)"
+        Update[Int](sql).updateMany(chunk).transact(tx)
+      }
 
-    val list = List(OKRBProduct(1, 2, 2, 312, "q2eqwewqe"), OKRBProduct(1, 21, 12, 111, "212qqq12"))
     transactor.use { tx =>
-      val database = new MySqlRepository(tx)
-      for {
-        db <- database.saveList(list)
-        _ <- IO(println(db))
-      } yield ExitCode.Success
+      fs2.Stream.emits(1 to 15600)
+        .chunkN(500)
+        .covary[IO]
+        .parEvalMap(10)(writeToDatabase[IO](_)(tx))
+        .compile.drain.unsafeRunSync()
+
+
+      IO(ExitCode.Success)
     }
 
   }
-}
+}/*
+  override def run(args: List[String]): IO[ExitCode] = {
+  fs2.Stream.emits(1 to 10000)
+  .chunkN(10)
+  .covary[IO]
+  .parEvalMap(10)(writeToDatabase[IO])
+  .compile.drain.unsafeRunSync()
+  IO(ExitCode.Success)
+}*/

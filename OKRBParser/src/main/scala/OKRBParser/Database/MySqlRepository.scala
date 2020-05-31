@@ -12,7 +12,7 @@ class MySqlRepository[F[_]:Sync](tx:Transactor[F]) extends Repository[F]{
   def save(okrb:ParseResult[List[OKRBProduct]])={
     okrb match {
       case Invalid(e) => e.foreach(println)
-      case Valid(a) =>
+      case Valid(a) =>saveList(a)
 
     }
   }
@@ -22,7 +22,7 @@ class MySqlRepository[F[_]:Sync](tx:Transactor[F]) extends Repository[F]{
       stream.
       transact(tx)
   }
-  def saveList(okrbList:List[OKRBProduct])={
+  def saveList(okrbList:List[OKRBProduct]): F[Int] ={
         val sql="insert into okrb (section, class, subcategories, groupings, name) values (?,?,?,?,?)"
         Update[OKRBProduct](sql).updateMany(okrbList).transact(tx)
     }

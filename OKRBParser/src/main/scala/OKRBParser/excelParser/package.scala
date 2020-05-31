@@ -9,7 +9,7 @@ package object excelParser extends ExcelRowParser {
   type ErrorList=List[String]
   type FastExcelParseResult[A]=Either[ErrorList, A]
   type ParseResult[A]=Validated[ErrorList, A]
-  implicit class ExcelRowParser(row:Row){
+  implicit class arser(row:Row){
    def toOKRBProduct: ParseResult[OKRBProduct] =(
      parseIntValue(0)(row).toValidated,
      parseIntValue(1)(row).toValidated,
