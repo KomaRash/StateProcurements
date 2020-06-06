@@ -11,12 +11,12 @@ import org.http4s.{HttpRoutes, ApiVersion => _}
 class OKRBService[F[_]:ConcurrentEffect](parser:Parser[F],
                                          repository: Repository[F]) extends  Http4sDsl[F] {
   val service: HttpRoutes[F] = HttpRoutes.of {
-    case GET -> Root / "multipart" =>
+    case GET -> Root / "okrb" =>
       Ok("Send a file (image, sound, etc) via POST Method")
 
-    case req@POST -> Root / "multipart" =>
+    case req@POST -> Root / "okrb" =>
       req.decodeWith(multipart[F], strict = true) { response =>
-      val a=response
+      response
         .parts
         .map(parser.giveDocument)
         .map(parser.getStreamSheet("OKRB"))
@@ -26,9 +26,9 @@ class OKRBService[F[_]:ConcurrentEffect](parser:Parser[F],
           x=>
             x.flatMap{
               chunk=>fs2.Stream.eval(repository.saveOKRBList(chunk))
-            }
+            }.compile.drain
         }
-      Ok(a.toString())
+      Ok("test")
 
       }.handleErrorWith{
         case ParseError(list)=>BadRequest(list.toString())

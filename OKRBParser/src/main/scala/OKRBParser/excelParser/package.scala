@@ -22,7 +22,7 @@ package object excelParser  {
      excelRowParser.parseStringValue(5)(row).toValidated
    ).mapN(OKRBProduct.apply)
   }
-  implicit class SheetOps[F:Sync](sheet:Sheet)(implicit S:StreamUtils[F]){
+  implicit class SheetOps[F[_]:Sync](sheet:Sheet)(implicit S:StreamUtils[F]){
     def toStreamIterator: fs2.Stream[F, Row] ={
       S.fromIterator(sheet.rowIterator().asScala)
 

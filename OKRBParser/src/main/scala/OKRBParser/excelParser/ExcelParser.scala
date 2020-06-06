@@ -8,7 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.http4s.multipart.Part
 
 
-class ExcelParser[F[_]:Sync:ConcurrentEffect](errorAlgeba: ParseErrorAlgebra[F])
+class ExcelParser[F[_]:Sync:ConcurrentEffect](errorAlgebra: ParseErrorAlgebra[F])
                                              (implicit S:StreamUtils[F]) extends Parser [F]{
   override  def giveDocument(part: Part[F]): fs2.Stream[F,Workbook] = {
     for{
@@ -22,14 +22,15 @@ class ExcelParser[F[_]:Sync:ConcurrentEffect](errorAlgeba: ParseErrorAlgebra[F])
                              (document: fs2.Stream[F, Workbook]):fs2.Stream[F, Row] ={
     for{
       doc<-document
+      _<-errorAlgebra.isSheetExist(sheetName)(doc)
       sheet= doc.getSheet(sheetName)
       row<-sheet.toStreamIterator
-
     }  yield row
   }
   override def getOKRBProducts(rows:fs2.Stream[F,Row]):fs2.Stream[F,OKRBProduct]=for{
     row<-rows
-    product<-errorAlgeba.validValue(row.toOKRBProduct)
+    parseResult<-S.evalF(row.toOKRBProduct)
+    product<-errorAlgebra.getParseResult(parseResult)
   }yield product
 
 }
