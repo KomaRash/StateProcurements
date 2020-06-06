@@ -1,8 +1,10 @@
 package OKRBParser.Database
 
 import OKRBParser.OKRBProduct
-import fs2.Stream
+import fs2._
+
 trait Repository[F[_]] {
-  def saveNewOKRB(OKRB:Stream[F,OKRBProduct]):F[Int] = ???
-  def loadALlOKRB():Stream[F,OKRBProduct]
+  def saveOKRBList(dataChunk:Chunk[OKRBProduct]):F[Int]
+  def getOKRBList:Stream[F,OKRBProduct]
+
 }

@@ -1,6 +1,7 @@
 package OKRBParser.excelParser
 import org.apache.poi.ss.usermodel.{Cell, Row}
-trait ExcelRowParser {
+
+sealed trait ExcelRowParser {
   import cats.syntax.either._
   def parseValue[A](parse:Cell=>A)(numberOfCell:Int)(row: Row): FastExcelParseResult[A] = {
     Either.catchNonFatal {
@@ -9,7 +10,7 @@ trait ExcelRowParser {
     }.leftMap(_ => List(s"невозможно распарсить ячейку   $numberOfCell в строке ${row.getRowNum}"))
   }
   def nonNegativeValue(numberOfCell:Int)(row:Int)(value:Int):FastExcelParseResult[Int]={
-  value.asRight[ErrorList].ensure(List(s"отрицательное значение $value в ячейке $numberOfCell,строке $row"))(_>0)
+  value.asRight[ErrorList].ensure(List(s"отрицательное значение $value в ячейке $numberOfCell,строке $row"))(_>=0)
   }
   def parseIntValue(numberOfCell:Int)(row: Row): FastExcelParseResult[Int] ={
     parseValue(cell=>{cell.getStringCellValue.toInt})(numberOfCell)(row).
@@ -18,4 +19,7 @@ trait ExcelRowParser {
   def parseStringValue: Int => Row => FastExcelParseResult[String] ={
     parseValue(cell=>cell.getStringCellValue)
   }
+}
+object ExcelRowParser{
+  def apply(): ExcelRowParser = new ExcelRowParser{}
 }

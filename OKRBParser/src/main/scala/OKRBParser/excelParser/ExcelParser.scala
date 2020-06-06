@@ -1,22 +1,35 @@
 package OKRBParser.excelParser
 
-import OKRBParser.OKRBProduct
-import cats.effect.Sync
-import cats.implicits._
-import cats.{Foldable, Monad}
-import fs2.Stream
-import org.apache.poi.ss.usermodel.Sheet
+import OKRBParser.excelParser.Algebra.ParseErrorAlgebra
+import OKRBParser.{OKRBProduct, StreamUtils}
+import cats.effect.{ConcurrentEffect, Sync}
+import org.apache.poi.ss.usermodel.{Row, Workbook}
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.http4s.multipart.Part
 
-import scala.jdk.CollectionConverters._
-class ExcelParser[F[_]:Monad:Sync:Foldable] extends Parser [F]{
-  def parseDocument(document: Sheet): F[ParseResult[List[OKRBProduct]]] = {
-    val documentIterator=document.iterator().asScala
-    Stream.fromIterator(documentIterator).covary[F].
-      map(_.toOKRBProduct).compile.
-      toList.
-      flatMap{x=>x.sequence.pure[F]}
-  }/*
-  override def createDocument[A](okrbData: fs2.Stream[F, OKRBProduct]): F[A] = ???
 
-  override def parseDocument[A](document: A): F[ParseResult[List[OKRBProduct]]] = ???*/
+class ExcelParser[F[_]:Sync:ConcurrentEffect](errorAlgeba: ParseErrorAlgebra[F])
+                                             (implicit S:StreamUtils[F]) extends Parser [F]{
+  override  def giveDocument(part: Part[F]): fs2.Stream[F,Workbook] = {
+    for{
+      ioStream<-part.body.through(fs2.io.toInputStream)
+      myExcelBook =new XSSFWorkbook(ioStream)
+      streamDoc<-S.evalF(myExcelBook)
+    }yield streamDoc
+  }
+
+  override def getStreamSheet(sheetName:String)
+                             (document: fs2.Stream[F, Workbook]):fs2.Stream[F, Row] ={
+    for{
+      doc<-document
+      sheet= doc.getSheet(sheetName)
+      row<-sheet.toStreamIterator
+
+    }  yield row
+  }
+  override def getOKRBProducts(rows:fs2.Stream[F,Row]):fs2.Stream[F,OKRBProduct]=for{
+    row<-rows
+    product<-errorAlgeba.validValue(row.toOKRBProduct)
+  }yield product
+
 }

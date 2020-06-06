@@ -1,31 +1,26 @@
 package OKRBParser.Database
-
-import OKRBParser.excelParser.ParseResult
 import OKRBParser.OKRBProduct
-import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Sync
 import doobie.implicits._
-import cats.instances.list._
 import doobie.util.transactor.Transactor
 import doobie.util.update.Update
+import fs2.Chunk
 class MySqlRepository[F[_]:Sync](tx:Transactor[F]) extends Repository[F]{
-  def save(okrb:ParseResult[List[OKRBProduct]])={
-    okrb match {
-      case Invalid(e) => e.foreach(println)
-      case Valid(a) =>saveList(a)
 
-    }
+  override def getOKRBList: fs2.Stream[F, OKRBProduct] = {
+    sql"""Select * from okrb"""
+      .query[OKRBProduct]
+      .stream
+      .transact(tx)
   }
-  override def loadALlOKRB(): fs2.Stream[F, OKRBProduct] = {
-    sql"Select * from okrb".
-      query[OKRBProduct].
-      stream.
-      transact(tx)
-  }
-  def saveList(okrbList:List[OKRBProduct]): F[Int] ={
-        val sql="insert into okrb (section, class, subcategories, groupings, name) values (?,?,?,?,?)"
-        Update[OKRBProduct](sql).updateMany(okrbList).transact(tx)
-    }
 
-//  override def saveNewOKRB(OKRB: fs2.Stream[F, OKRBProduct]): F[Int] = ???
+  override def saveOKRBList(dataChunk: Chunk[OKRBProduct]): F[Int] = {
+    val sqlUpdate=
+      sql"""insert into okrb
+           |(section, class, subcategories, groupings, name)
+           |values (?,?,?,?,?)""".stripMargin
+    Update[OKRBProduct](sqlUpdate.toString)
+      .updateMany(dataChunk)
+      .transact(tx)
+  }
 }

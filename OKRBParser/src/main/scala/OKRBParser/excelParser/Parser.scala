@@ -1,8 +1,12 @@
 package OKRBParser.excelParser
-
 import OKRBParser.OKRBProduct
-import fs2.Stream
+import org.apache.poi.ss.usermodel.{Row, Workbook}
+import org.http4s.multipart.Part
 trait Parser[F[_]]{
- def parseDocument[A](document: A) = ???
- def createDocument[A](okrbData: Stream[F,OKRBProduct]):F[A] = ???
+ def giveDocument(part:Part[F]): fs2.Stream[F,Workbook]
+
+ def getStreamSheet(sheetName:String)
+                   (document: fs2.Stream[F, Workbook]):fs2.Stream[F, Row]
+
+ def getOKRBProducts(document:fs2.Stream[F,Row]):fs2.Stream[F,OKRBProduct]
 }

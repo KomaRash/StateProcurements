@@ -11,7 +11,8 @@ lazy val okrbParser = project.in(file("OKRBParser")).settings(
   parserSettings,
   libraryDependencies ++= parserDependency,
   libraryDependencies ++= catsDependency,
-  libraryDependencies ++= doobieDependency
+  libraryDependencies ++= doobieDependency,
+  libraryDependencies ++= http4sDependency
 )
 
 lazy val parserSettings = Seq(
@@ -31,7 +32,7 @@ lazy val scalacOptionList = Seq(
 lazy val catsDependency = Seq("org.typelevel" %% "cats-core" % "2.0.0",
   "co.fs2" %% "fs2-core" % "2.1.0")
 
-
+lazy val http4sVersion="0.21.0"
 lazy val doobieVersion = "0.8.8"
 lazy val doobieDependency = Seq(
   "org.tpolecat" %% "doobie-core" % doobieVersion,
@@ -45,4 +46,13 @@ lazy val doobieDependency = Seq(
 lazy val parserDependency = Seq(
   "org.apache.poi" % "poi" % "3.9",
   "org.apache.poi" % "poi-ooxml" % "3.9")
+lazy val http4sDependency=Seq(
+  "org.http4s" %% "http4s-dsl" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-server" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-client" % http4sVersion,
+  "org.http4s" %% "http4s-scala-xml"  % http4sVersion,
+  "org.http4s" %% "http4s-circe"  % http4sVersion,
+  "io.circe" %% "circe-core" % "0.13.0",
+  "io.circe" %% "circe-generic" % "0.13.0"
 
+)
