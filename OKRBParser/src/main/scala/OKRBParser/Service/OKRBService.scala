@@ -15,8 +15,8 @@ class OKRBService[F[_]:ConcurrentEffect](parser:Parser[F],
       Ok("Send a file (image, sound, etc) via POST Method")
 
     case req@POST -> Root / "okrb" =>
-      req.decodeWith(multipart[F], strict = true) { response =>
-      response
+      req.decodeWith(multipart[F], strict = true) { request =>
+        val a=request
         .parts
         .map(parser.giveDocument)
         .map(parser.getStreamSheet("OKRB"))
@@ -24,11 +24,12 @@ class OKRBService[F[_]:ConcurrentEffect](parser:Parser[F],
         .map(_.chunkN(100))
         .map{
           x=>
-            x.flatMap{
-              chunk=>fs2.Stream.eval(repository.saveOKRBList(chunk))
-            }.compile.drain
-        }
-      Ok("test")
+            x.parEvalMap(10){
+              chunk=> repository.saveOKRBList(chunk)
+            }
+        }.sequence.compile.toList
+
+      Ok(a.map(_.toString()))
 
       }.handleErrorWith{
         case ParseError(list)=>BadRequest(list.toString())

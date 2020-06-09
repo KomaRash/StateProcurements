@@ -16,11 +16,12 @@ class MySqlRepository[F[_]:Sync](tx:Transactor[F]) extends Repository[F]{
 
   override def saveOKRBList(dataChunk: Chunk[OKRBProduct]): F[Int] = {
     val sqlUpdate=
-      sql"""insert into okrb
+      """insert into okrb
            |(section, class, subcategories, groupings, name)
            |values (?,?,?,?,?)""".stripMargin
-    Update[OKRBProduct](sqlUpdate.toString)
+    Update[OKRBProduct](sqlUpdate)
       .updateMany(dataChunk)
       .transact(tx)
   }
+
 }

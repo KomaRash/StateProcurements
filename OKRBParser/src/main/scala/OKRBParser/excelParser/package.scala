@@ -24,7 +24,7 @@ package object excelParser  {
   }
   implicit class SheetOps[F[_]:Sync](sheet:Sheet)(implicit S:StreamUtils[F]){
     def toStreamIterator: fs2.Stream[F, Row] ={
-      S.fromIterator(sheet.rowIterator().asScala)
+      S.fromIterator(sheet.rowIterator().asScala.drop(1))
 
     }
   }

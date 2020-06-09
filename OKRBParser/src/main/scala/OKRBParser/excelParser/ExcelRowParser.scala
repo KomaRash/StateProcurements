@@ -7,14 +7,17 @@ sealed trait ExcelRowParser {
     Either.catchNonFatal {
       val cell = row.getCell(numberOfCell)
       parse(cell)
-    }.leftMap(_ => List(s"невозможно распарсить ячейку   $numberOfCell в строке ${row.getRowNum}"))
+    }.leftMap(_ => List(s"невозможно распарсить ячейку $numberOfCell в строке ${row.getRowNum}"))
   }
   def nonNegativeValue(numberOfCell:Int)(row:Int)(value:Int):FastExcelParseResult[Int]={
   value.asRight[ErrorList].ensure(List(s"отрицательное значение $value в ячейке $numberOfCell,строке $row"))(_>=0)
   }
   def parseIntValue(numberOfCell:Int)(row: Row): FastExcelParseResult[Int] ={
-    parseValue(cell=>{cell.getStringCellValue.toInt})(numberOfCell)(row).
-      flatMap(nonNegativeValue(numberOfCell)(row.getRowNum))
+    parseValue(cell=>{cell.getNumericCellValue.toInt})(numberOfCell)(row)
+      .recoverWith{
+      case _=>parseValue(cell=>{cell.getStringCellValue.toInt})(numberOfCell)(row)
+    }
+      .flatMap(nonNegativeValue(numberOfCell)(row.getRowNum))
   }
   def parseStringValue: Int => Row => FastExcelParseResult[String] ={
     parseValue(cell=>cell.getStringCellValue)

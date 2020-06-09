@@ -2,6 +2,6 @@ package OKRBParser.Config
 
 case class DatabaseConfig(driver:String,
                           url:String,
-                          password:String,
                           user:String,
+                          password:String,
                           poolSize:Int)
