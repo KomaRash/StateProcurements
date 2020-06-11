@@ -1,8 +1,9 @@
 package OKRBParser.Database
 
 import OKRBParser.Config.DatabaseConfig
-import cats.effect.{Async, Blocker, ContextShift, Resource}
+import cats.effect.{Async, Blocker, ContextShift, Resource, Sync}
 import doobie.hikari.HikariTransactor
+import org.flywaydb.core.Flyway
 
 import scala.concurrent.ExecutionContext
 
@@ -16,4 +17,18 @@ object RepositoryConfig {
         config.password,
         fixedThreadPool,
         blocker)
+    def initDb[F[_]](transactor: HikariTransactor[F])(implicit S:Sync[F]): F[Unit] ={
+       transactor.configure{
+        hikari=>
+         S.delay {
+           Flyway
+             .configure()
+             .dataSource(hikari)
+             .load()
+             .migrate()
+         }
+         }
+    }
+
+
 }

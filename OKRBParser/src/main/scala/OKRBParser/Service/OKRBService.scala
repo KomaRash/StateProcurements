@@ -29,7 +29,7 @@ class OKRBService[F[_]:ConcurrentEffect](parser:Parser[F],
             }
         }.sequence.compile.toList
 
-      Ok(a.map(_.toString()))
+      Ok(a.map(_.map(_.sum).sum.toString))
 
       }.handleErrorWith{
         case ParseError(list)=>BadRequest(list.toString())

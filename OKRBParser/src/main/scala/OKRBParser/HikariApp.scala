@@ -20,16 +20,15 @@ object TestApp extends IOApp {
     32)
   override def run(args: List[String]): IO[ExitCode] = {
     stream[IO].use(_ => IO.never).as(ExitCode.Success)
-
-
-
   }
+
   def stream[F[_]: ConcurrentEffect: ContextShift: Timer]:Resource[F, H4Server[F]] =for{
     blocker<-(Blocker[F])
     parseAlgebra= new ExcelParseErrorInterpreter[F]()
     excelParser=new ExcelParser[F](parseAlgebra)
     fixedThreadPool  <- (ExecutionContexts.fixedThreadPool[F](databaseConfig.poolSize))
     transactor<-(RepositoryConfig.transactor(databaseConfig,fixedThreadPool,blocker))
+    _<-Resource.liftF(RepositoryConfig.initDb(transactor))
     database=new MySqlRepository[F](transactor)
     okrbService=new OKRBService[F](excelParser,database)
     server <- (BlazeServerBuilder[F]
