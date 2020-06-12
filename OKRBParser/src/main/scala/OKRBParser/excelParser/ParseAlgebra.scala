@@ -1,8 +1,10 @@
 package OKRBParser.excelParser
+
 import OKRBParser.OKRBProduct
 import org.apache.poi.ss.usermodel.{Row, Workbook}
 import org.http4s.multipart.Part
-trait Parser[F[_]]{
+
+trait ParseAlgebra[F[_]]{
  def giveDocument(part:Part[F]): fs2.Stream[F,Workbook]
 
  def getStreamSheet(sheetName:String)

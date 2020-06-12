@@ -19,10 +19,9 @@ sealed trait ExcelRowParser {
     }
       .flatMap(nonNegativeValue(numberOfCell)(row.getRowNum))
   }
-  def parseStringValue: Int => Row => FastExcelParseResult[String] ={
-    parseValue(cell=>cell.getStringCellValue)
+  def parseStringValue(cell:Int)(row:Row): FastExcelParseResult[String] ={
+    parseValue(cell=>cell.getStringCellValue)(cell)(row)
+      .ensure(List(s"пустая строка в ячейке в ячейке $cell,строке ${row.getRowNum}"))(_.nonEmpty)
   }
 }
-object ExcelRowParser{
-  def apply(): ExcelRowParser = new ExcelRowParser{}
-}
+object ExcelRowParser extends ExcelRowParser

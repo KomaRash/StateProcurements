@@ -1,0 +1,1 @@
+Alter table OKRB modify Name varchar(2048) not null;

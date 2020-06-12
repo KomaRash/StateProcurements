@@ -1,14 +1,14 @@
-package OKRBParser.Service
+package OKRBParser.service.EndPoints
 
-import OKRBParser.Database.Repository
 import OKRBParser.ParseError
-import OKRBParser.excelParser.Parser
+import OKRBParser.database.Repository
+import OKRBParser.excelParser.ParseAlgebra
 import cats.effect.ConcurrentEffect
 import cats.implicits._
 import org.http4s.EntityDecoder.multipart
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{HttpRoutes, ApiVersion => _}
-class OKRBService[F[_]:ConcurrentEffect](parser:Parser[F],
+class OKRBService[F[_]:ConcurrentEffect](parser:ParseAlgebra[F],
                                          repository: Repository[F]) extends  Http4sDsl[F] {
   val service: HttpRoutes[F] = HttpRoutes.of {
     case GET -> Root / "okrb" =>
@@ -21,7 +21,7 @@ class OKRBService[F[_]:ConcurrentEffect](parser:Parser[F],
         .map(parser.giveDocument)
         .map(parser.getStreamSheet("OKRB"))
         .map(parser.getOKRBProducts)
-        .map(_.chunkN(100))
+        .map(_.chunkN(500))
         .map{
           x=>
             x.parEvalMap(10){
@@ -32,7 +32,7 @@ class OKRBService[F[_]:ConcurrentEffect](parser:Parser[F],
       Ok(a.map(_.map(_.sum).sum.toString))
 
       }.handleErrorWith{
-        case ParseError(list)=>BadRequest(list.toString())
+        case ParseError(list)=>BadRequest(repository.clearOKRBList().map(x=>list.toString()+s"удалено $x"))
       }
   }
 

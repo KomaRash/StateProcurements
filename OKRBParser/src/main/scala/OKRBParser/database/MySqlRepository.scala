@@ -1,4 +1,4 @@
-package OKRBParser.Database
+package OKRBParser.database
 import OKRBParser.OKRBProduct
 import cats.effect.Sync
 import doobie.implicits._
@@ -24,4 +24,7 @@ class MySqlRepository[F[_]:Sync](tx:Transactor[F]) extends Repository[F]{
       .transact(tx)
   }
 
+  override def clearOKRBList(): F[Int] = {
+    sql"""DELETE from okrb where true""".update.run.transact(tx)
+  }
 }

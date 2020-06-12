@@ -6,10 +6,10 @@
     </encoder>
   </appender>
   <appender name="File" class="ch.qos.logback.core.FileAppender">
-    <file>testFile.log</file>
+    <file>LogFile.log</file>
     <append>true</append>
     <!-- set immediateFlush to false for much higher logging throughput -->
-    <immediateFlush>true</immediateFlush>
+    <immediateFlush>false</immediateFlush>
     <!-- <withJansi>true</withJansi> -->
     <encoder>
       <pattern>[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</pattern>

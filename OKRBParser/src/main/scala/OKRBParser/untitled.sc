@@ -9,5 +9,5 @@ val st=eff++eff2++eff31++eff3
 st.compile.drain.unsafeRunSync()*/
 import cats.implicits._
 13.asRight[String].recover{
-  case x=>123
+  case x=>1231
 }

@@ -1,10 +1,10 @@
 package OKRBParser
 
-import OKRBParser.Config.DatabaseConfig
-import OKRBParser.Database._
-import OKRBParser.Service.OKRBService
+import OKRBParser.config.DatabaseConfig
+import OKRBParser.database._
 import OKRBParser.excelParser.Algebra.ExcelParseErrorInterpreter
 import OKRBParser.excelParser.ExcelParser
+import OKRBParser.service.EndPoints.OKRBService
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
 import cats.syntax.functor._
 import doobie.util.ExecutionContexts
@@ -14,7 +14,7 @@ import org.http4s.syntax.kleisli._
 
 object TestApp extends IOApp {
   val databaseConfig=DatabaseConfig("com.mysql.jdbc.Driver",     // driver classname
-    "jdbc:mysql://localhost:3306/ StateProcurements?useUnicode=true&serverTimezone=UTC",     // connect URL (driver-specific)
+    "jdbc:mysql://localhost:3306/ stateproducements?useUnicode=true&serverTimezone=UTC",     // connect URL (driver-specific)
     "RootKoma",                  // user
     "root",  //password
     32)

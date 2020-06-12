@@ -1,4 +1,4 @@
-package OKRBParser.Config
+package OKRBParser.config
 
 case class DatabaseConfig(driver:String,
                           url:String,

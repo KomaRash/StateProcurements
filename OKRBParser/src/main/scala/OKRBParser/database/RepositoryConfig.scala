@@ -1,6 +1,6 @@
-package OKRBParser.Database
+package OKRBParser.database
 
-import OKRBParser.Config.DatabaseConfig
+import OKRBParser.config.DatabaseConfig
 import cats.effect.{Async, Blocker, ContextShift, Resource, Sync}
 import doobie.hikari.HikariTransactor
 import org.flywaydb.core.Flyway
