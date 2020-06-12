@@ -1,11 +1,12 @@
-package OKRBParser.excelParser.Algebra
-import OKRBParser.excelParser.ParseResult
+package OKRBParser.infrastructure.parseExcel
+
+import OKRBParser.domain.parseExcel.{ParseErrorAlgebra, ParseResult}
 import OKRBParser.{ParseError, StreamUtils}
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Sync
 import fs2.Stream
 import org.apache.poi.ss.usermodel.Workbook
-class ExcelParseErrorInterpreter[F[_]:Sync](implicit S:StreamUtils[F]) extends ParseErrorAlgebra [F] {
+class ParseErrorInterpreter[F[_]:Sync](implicit S:StreamUtils[F]) extends ParseErrorAlgebra [F] {
   override def getParseResult[A](parseResult: ParseResult[A]): Stream[F, A] =
     parseResult match {
       case Invalid(errorList) => S.error[A](ParseError(errorList))

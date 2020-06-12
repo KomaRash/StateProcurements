@@ -1,11 +1,9 @@
-package OKRBParser.database
+package OKRBParser.domain.parseExcel.okrb
 
-import OKRBParser.OKRBProduct
-import fs2._
+import fs2.{Chunk, Stream}
 
-trait Repository[F[_]] {
+trait OKRBRepositoryAlgebra[F[_]] {
   def saveOKRBList(dataChunk:Chunk[OKRBProduct]):F[Int]
   def getOKRBList:Stream[F,OKRBProduct]
   def clearOKRBList():F[Int]
-
 }

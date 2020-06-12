@@ -1,11 +1,12 @@
-package OKRBParser.database
-import OKRBParser.OKRBProduct
+package OKRBParser.infrastructure.repository.MySql
+
+import OKRBParser.domain.parseExcel.okrb.{OKRBProduct, OKRBRepositoryAlgebra}
 import cats.effect.Sync
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import doobie.util.update.Update
 import fs2.Chunk
-class MySqlRepository[F[_]:Sync](tx:Transactor[F]) extends Repository[F]{
+class MySqlOKRBRepositoryInterpreter[F[_]:Sync](tx:Transactor[F]) extends OKRBRepositoryAlgebra[F]{
 
   override def getOKRBList: fs2.Stream[F, OKRBProduct] = {
     sql"""Select * from okrb"""

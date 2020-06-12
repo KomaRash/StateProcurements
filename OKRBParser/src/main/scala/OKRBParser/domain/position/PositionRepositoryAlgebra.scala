@@ -1,6 +1,6 @@
-package OKRBParser.position
+package OKRBParser.domain.position
 
-trait PositionRepository[F[_]] {
+trait PositionRepositoryAlgebra[F[_]] {
   def create(position:Position):F[Position]
   def updateUserInfo(position: Position,newUserInfo: UserInfo):F[Position]
   def deleteUserInfo(position: Position):F[Position]

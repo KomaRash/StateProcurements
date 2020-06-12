@@ -1,9 +1,9 @@
 package OKRBParser
 
-import OKRBParser.config.DatabaseConfig
-import OKRBParser.database._
-import OKRBParser.excelParser.Algebra.ExcelParseErrorInterpreter
-import OKRBParser.excelParser.ExcelParser
+import OKRBParser.config.{DatabaseConfig, RepositoryConfig}
+import OKRBParser.infrastructure.parseExcel.ParseErrorInterpreter
+import OKRBParser.infrastructure.parseExcel.okrb.OKRBParseInterpreter
+import OKRBParser.infrastructure.repository.MySql.MySqlOKRBRepositoryInterpreter
 import OKRBParser.service.EndPoints.OKRBService
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
 import cats.syntax.functor._
@@ -24,12 +24,12 @@ object TestApp extends IOApp {
 
   def stream[F[_]: ConcurrentEffect: ContextShift: Timer]:Resource[F, H4Server[F]] =for{
     blocker<-(Blocker[F])
-    parseAlgebra= new ExcelParseErrorInterpreter[F]()
-    excelParser=new ExcelParser[F](parseAlgebra)
+    parseAlgebra= new ParseErrorInterpreter[F]()
+    excelParser=new OKRBParseInterpreter[F](parseAlgebra)
     fixedThreadPool  <- (ExecutionContexts.fixedThreadPool[F](databaseConfig.poolSize))
     transactor<-(RepositoryConfig.transactor(databaseConfig,fixedThreadPool,blocker))
     _<-Resource.liftF(RepositoryConfig.initDb(transactor))
-    database=new MySqlRepository[F](transactor)
+    database=new MySqlOKRBRepositoryInterpreter[F](transactor)
     okrbService=new OKRBService[F](excelParser,database)
     server <- (BlazeServerBuilder[F]
       .bindHttp(8080,"127.0.0.1")

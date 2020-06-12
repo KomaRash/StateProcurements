@@ -1,4 +1,6 @@
-package OKRBParser.excelParser
+package OKRBParser.infrastructure.parseExcel
+
+import OKRBParser.domain.parseExcel.{ErrorList, FastExcelParseResult}
 import org.apache.poi.ss.usermodel.{Cell, Row}
 
 sealed trait ExcelRowParser {

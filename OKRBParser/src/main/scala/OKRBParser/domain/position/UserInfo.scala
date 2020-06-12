@@ -1,4 +1,4 @@
-package OKRBParser.position
+package OKRBParser.domain.position
 
 case class UserInfo(id: Option[Long] = None,
                     name:String,

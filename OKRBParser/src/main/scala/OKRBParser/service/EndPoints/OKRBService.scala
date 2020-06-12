@@ -1,15 +1,14 @@
 package OKRBParser.service.EndPoints
 
 import OKRBParser.ParseError
-import OKRBParser.database.Repository
-import OKRBParser.excelParser.ParseAlgebra
+import OKRBParser.domain.parseExcel.okrb.{OKRBParseAlgebra, OKRBRepositoryAlgebra}
 import cats.effect.ConcurrentEffect
 import cats.implicits._
 import org.http4s.EntityDecoder.multipart
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{HttpRoutes, ApiVersion => _}
-class OKRBService[F[_]:ConcurrentEffect](parser:ParseAlgebra[F],
-                                         repository: Repository[F]) extends  Http4sDsl[F] {
+class OKRBService[F[_]:ConcurrentEffect](parser:OKRBParseAlgebra[F],
+                                         repository: OKRBRepositoryAlgebra[F]) extends  Http4sDsl[F] {
   val service: HttpRoutes[F] = HttpRoutes.of {
     case GET -> Root / "okrb" =>
       Ok("Send a file (image, sound, etc) via POST Method")
@@ -19,8 +18,8 @@ class OKRBService[F[_]:ConcurrentEffect](parser:ParseAlgebra[F],
         val a=request
         .parts
         .map(parser.giveDocument)
-        .map(parser.getStreamSheet("OKRB"))
-        .map(parser.getOKRBProducts)
+        .map(parser.getStreamSheet)
+        .map(parser.convectRow)
         .map(_.chunkN(500))
         .map{
           x=>
