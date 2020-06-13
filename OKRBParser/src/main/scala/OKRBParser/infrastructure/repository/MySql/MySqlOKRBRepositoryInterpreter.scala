@@ -6,7 +6,9 @@ import doobie.implicits._
 import doobie.util.transactor.Transactor
 import doobie.util.update.Update
 import fs2.Chunk
-class MySqlOKRBRepositoryInterpreter[F[_]:Sync](tx:Transactor[F]) extends OKRBRepositoryAlgebra[F]{
+class MySqlOKRBRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
+                                                maxThreadPool:Int)
+  extends OKRBRepositoryAlgebra[F]{
 
   override def getOKRBList: fs2.Stream[F, OKRBProduct] = {
     sql"""Select * from okrb"""
@@ -15,7 +17,7 @@ class MySqlOKRBRepositoryInterpreter[F[_]:Sync](tx:Transactor[F]) extends OKRBRe
       .transact(tx)
   }
 
-  override def saveOKRBList(dataChunk: Chunk[OKRBProduct]): F[Int] = {
+  override def insertOKRBChunk(dataChunk: Chunk[OKRBProduct]): F[Int] = {
     val sqlUpdate=
       """insert into okrb
            |(section, class, subcategories, groupings, name)
@@ -28,4 +30,6 @@ class MySqlOKRBRepositoryInterpreter[F[_]:Sync](tx:Transactor[F]) extends OKRBRe
   override def clearOKRBList(): F[Int] = {
     sql"""DELETE from okrb where true""".update.run.transact(tx)
   }
+
+  override def maxThreadPool(): Int = maxThreadPool
 }

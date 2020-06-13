@@ -11,15 +11,14 @@ class OKRBParseInterpreter[F[_] : ConcurrentEffect](parseValid: ParseErrorAlgebr
                                                    (implicit S: StreamUtils[F])
   extends ParseInterpreter[F](parseValid)
     with OKRBParseAlgebra[F] {
-  override def convectRow(rows: fs2.Stream[F, Row]): fs2.Stream[F, OKRBProduct] = {
-    for{
-      dataRow<-rows.drop(1)// notes: add configure with Start data row index
-      parseResult<-S.evalF(dataRow.toOKRBProduct)
-      product<-parseValid.getParseResult(parseResult)
-    }yield product
+  override def convectRow(row: Row): fs2.Stream[F, OKRBProduct] = {
+    for {
+      parseResult <- S.evalF(row.toOKRBProduct)
+      product <- parseValid.getParseResult(parseResult)
+    } yield product
   }
 
-  override def getStreamSheet(document: fs2.Stream[F, Workbook]): fs2.Stream[F, Row] = {
-    getStreamSheet("ОКРБ")(document)
+  override def getStreamSheet(document: Workbook): fs2.Stream[F, Row] = {
+    getStreamSheet("ОКРБ")(1)(document)
   }
 }

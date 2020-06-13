@@ -8,7 +8,8 @@ import org.apache.poi.ss.usermodel.{Row, Workbook}
 import org.http4s.multipart.Part
 
 abstract class ParseInterpreter[F[_] : Sync : ConcurrentEffect](parseValid: ParseErrorAlgebra[F])
-                                                      (implicit S: StreamUtils[F]) extends ParseAlgebra[F] {
+                                                               (implicit S: StreamUtils[F])
+  extends ParseAlgebra[F] {
   override def giveDocument(part: Part[F]): fs2.Stream[F, Workbook] = {
     for {
       ioStream <- part.body.through(fs2.io.toInputStream)
@@ -18,12 +19,12 @@ abstract class ParseInterpreter[F[_] : Sync : ConcurrentEffect](parseValid: Pars
   }
 
   def getStreamSheet(sheetName: String)
-                             (document: fs2.Stream[F, Workbook]): fs2.Stream[F, Row] = {
+                    (headerSize:Int)
+                    (document: Workbook): fs2.Stream[F, Row] = {
     for {
-      doc <- document
-      _ <- parseValid.isSheetExist(sheetName)(doc)
-      sheet = doc.getSheet(sheetName)
-      row <- sheet.toStreamIterator
+      _ <- parseValid.isSheetExist(sheetName)(document)
+      sheet = document.getSheet(sheetName)
+      row <- sheet.toStreamIterator.drop(headerSize)
     } yield row
   }
 }
