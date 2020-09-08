@@ -1,7 +1,7 @@
 CREATE TABLE
     if not exists MilitaryPosition
 (
-    PositionID   INTEGER not null auto_increment,
+    PositionID   SERIAL,
     PositionName varchar(150),
     MilitaryUnit varchar(100),
     UserId       INTEGER,

@@ -1,6 +1,6 @@
 CREATE TABLE if not exists Users
 (
-    UserId         INTEGER      not null auto_increment,
+    UserId         Serial,
     UserName       varchar(20)  not null,
     UserSurname    varchar(45)  not null,
     UserFatherName varchar(40)  not null default ' ',
@@ -9,4 +9,3 @@ CREATE TABLE if not exists Users
     MilitaryRank   varchar(30)  not null,
     constraint Users_pk primary key (UserId)
 );
-#enum('ст. л-т','к-н','м-р','п-п/к','п-п/к')

@@ -14,10 +14,10 @@ import org.http4s.server.{Server => H4Server}
 import org.http4s.syntax.kleisli._
 
 object TestApp extends IOApp {
-  val databaseConfig=DatabaseConfig("com.mysql.jdbc.Driver",     // driver classname
-    "jdbc:mysql://localhost:3306/ stateproducements?useUnicode=true&serverTimezone=UTC",     // connect URL (driver-specific)
-    "RootKoma",                  // user
-    "root",  //password
+  val databaseConfig=DatabaseConfig("org.postgresql.Driver",     // driver classname
+    "jdbc:postgresql://localhost:5432/stateproducement",     // connect URL (driver-specific)
+    "gpk",                  // user
+    "2020",  //password
     32)
   override def run(args: List[String]): IO[ExitCode] = {
     stream[IO].use(_ => IO.never).as(ExitCode.Success)
