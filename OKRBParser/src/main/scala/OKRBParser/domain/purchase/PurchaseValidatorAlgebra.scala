@@ -1,5 +1,5 @@
 package OKRBParser.domain.purchase
 
-trait PurchaseValidatorAlgebra[T] {
-
+trait PurchaseValidatorAlgebra[F[_]] {
+def isValidOKRBProduct(purchaseInfo: PurchaseInfo):
 }

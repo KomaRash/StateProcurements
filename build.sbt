@@ -42,9 +42,11 @@ lazy val doobieDependency = Seq(
   "org.tpolecat" %% "doobie-specs2" % doobieVersion,
   "org.tpolecat" %% "doobie-scalatest" % doobieVersion % "test",
   "org.flywaydb" % "flyway-core" % flywayVersion,
-  "org.postgresql" % "postgresql" % "42.2.5",
+  "org.postgresql" %   "postgresql" % "42.2.5",
   "org.slf4j" % "slf4j-api" % "1.7.5",
   "ch.qos.logback" % "logback-classic" % "1.0.9")
+
+
 lazy val parserDependency = Seq(
   "org.apache.poi" % "poi" % "3.9",
   "org.apache.poi" % "poi-ooxml" % "3.9")

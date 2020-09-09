@@ -1,5 +1,5 @@
 create table if not exists OKRB
-(   productId     SERIAL,
+(   productId     SERIAL    primary key,
     Section       varchar(2)   Not Null,
     Class         varchar(2)   Not Null,
     Subcategories varchar(2)   Not Null,

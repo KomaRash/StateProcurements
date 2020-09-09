@@ -5,7 +5,7 @@ import OKRBParser.domain.parseExcel.okrb.OKRBParseService
 import OKRBParser.infrastructure.endpoints.OKRBEndpoints
 import OKRBParser.infrastructure.parseExcel.ParseErrorInterpreter
 import OKRBParser.infrastructure.parseExcel.okrb.OKRBParseInterpreter
-import OKRBParser.infrastructure.repository.MySql.MySqlOKRBRepositoryInterpreter
+import OKRBParser.infrastructure.repository.Postgres.PostgresOKRBRepositoryInterpreter
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
 import cats.syntax.functor._
 import doobie.util.ExecutionContexts
@@ -30,7 +30,7 @@ object TestApp extends IOApp {
     fixedThreadPool  <- (ExecutionContexts.fixedThreadPool[F](databaseConfig.poolSize))
     transactor<-(RepositoryConfig.transactor(databaseConfig,fixedThreadPool,blocker))
     _<-Resource.liftF(RepositoryConfig.initDb(transactor))
-    database=new MySqlOKRBRepositoryInterpreter[F](transactor,10)
+    database=new PostgresOKRBRepositoryInterpreter[F](transactor,10)
     service= new OKRBParseService[F](database,excelParser)
     okrbEndpoint=new OKRBEndpoints[F](service)
     server <- (BlazeServerBuilder[F]

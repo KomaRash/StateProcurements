@@ -1,5 +1,6 @@
 package OKRBParser.domain.purchase
 
-class PurchaseService {
+class PurchaseService[F[_]](purchaseRepository: PurchaseRepositoryAlgebra[F],
+                            purchaseValidator:PurchaseValidatorAlgebra[F]){
 
 }

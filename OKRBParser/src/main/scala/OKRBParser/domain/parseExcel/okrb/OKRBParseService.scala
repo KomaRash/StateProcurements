@@ -14,7 +14,5 @@ class OKRBParseService[F[_] : Concurrent](okrbRepository: OKRBRepositoryAlgebra[
     okrbProducts // привязать к конфиг файлу
       .chunkN(100) // аналогично
       .parEvalMap(okrbRepository.maxThreadPool())(okrbRepository.insertOKRBChunk)
-
-
   }
 }
