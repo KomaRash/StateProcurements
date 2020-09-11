@@ -1,5 +1,6 @@
 create table if not exists Purchase
 (   PurchaseId     SERIAL primary key ,
+    Description varchar(1024),
     DateOfPurchase date,
     PositionId SERIAL,
     ProcedureName     varchar(255) Not Null,

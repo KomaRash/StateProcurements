@@ -57,6 +57,7 @@ lazy val http4sDependency = Seq(
   "org.http4s" %% "http4s-scala-xml" % http4sVersion,
   "org.http4s" %% "http4s-circe" % http4sVersion,
   "io.circe" %% "circe-core" % "0.13.0",
-  "io.circe" %% "circe-generic" % "0.13.0"
+  "io.circe" %% "circe-generic" % "0.13.0",
+  "com.beachape" %% "enumeratum-circe" % "1.6.1"
 
 )

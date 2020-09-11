@@ -4,11 +4,11 @@ import java.util.Date
 
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
 
-case class PurchaseLot(lotId:Option[Int],
-                       okrb:OKRBProduct,
+case class PurchaseLot(okrb:OKRBProduct,
                        deadline:Date,
                        amount:Float,
-                       name:String)
+                       name:String,
+                       lotId:Option[Int]=None)
 
 /**
 create table if not exists PurchaseLot(

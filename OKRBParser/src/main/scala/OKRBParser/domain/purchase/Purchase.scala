@@ -3,11 +3,13 @@ package OKRBParser.domain.purchase
 import java.util.Date
 
 import OKRBParser.domain.position.Position
-import cats.data.NonEmptyList
 
-case class Purchase(purchaseId:Option[Int],
-                    purchaseInfo: PurchaseInfo,
-                    purchaseLots:NonEmptyList[PurchaseLot])
+case class Purchase(purchaseInfo: PurchaseInfo,
+                    description:String,
+                    purchaseStatus:PurchaseStatus,
+                    purchaseLots:List[PurchaseLot]=List(),
+                    purchaseId:Option[PurchaseId]=None)
+
 case class PurchaseInfo(dateOfPurchase:Date,
                         position: Position,
                         procedureName:String)
