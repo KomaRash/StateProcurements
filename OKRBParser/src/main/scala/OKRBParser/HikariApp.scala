@@ -2,7 +2,7 @@ package OKRBParser
 
 import OKRBParser.config.{DatabaseConfig, RepositoryConfig}
 import OKRBParser.domain.parseExcel.okrb.OKRBParseService
-import OKRBParser.infrastructure.endpoints.OKRBEndpoints
+import OKRBParser.infrastructure.endpoints.{OKRBEndpoints, PurchaseEndpoints}
 import OKRBParser.infrastructure.parseExcel.ParseErrorInterpreter
 import OKRBParser.infrastructure.parseExcel.okrb.OKRBParseInterpreter
 import OKRBParser.infrastructure.repository.Postgres.PostgresOKRBRepositoryInterpreter
@@ -33,9 +33,10 @@ object TestApp extends IOApp {
     database=new PostgresOKRBRepositoryInterpreter[F](transactor,10)
     service= new OKRBParseService[F](database,excelParser)
     okrbEndpoint=new OKRBEndpoints[F](service)
+    purchaseEndpoint=new PurchaseEndpoints[F]
     server <- (BlazeServerBuilder[F]
       .bindHttp(8080,"127.0.0.1")
-      .withHttpApp(okrbEndpoint.endpoints().orNotFound)
+      .withHttpApp(purchaseEndpoint.endpoint.orNotFound)
       .resource)
   }yield (server)
 }

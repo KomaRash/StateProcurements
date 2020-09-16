@@ -14,7 +14,7 @@ class PurchaseValidationInterpreter[F[_]:Monad](repository: PurchaseRepositoryAl
 
   override def exist(purchaseId: Option[PurchaseId]): EitherT[F, PurchaseNotFound.type, Unit] = {
     purchaseId match {
-      case Some(id) => EitherT.fromOptionF(repository.getById(id),PurchaseNotFound)
+      case Some(id) => EitherT.fromOptionF(repository.getById(id),PurchaseNotFound).map(_ =>())
       case None =>EitherT.fromEither(Left(PurchaseNotFound))
     }
   }

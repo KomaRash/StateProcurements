@@ -1,6 +1,3 @@
-val a=fs2.Stream(123,-2,123,31)
-a.drop(2).compile.toVector
-val c=for{
-  b<-a.drop(2)
-} yield b
-c.compile.toVector
+ import cats._, data._, implicits._
+ val a: OptionT[Eval, Int] = 1.pure[OptionT[Eval, *]]
+ val b: OptionT[EitherT[Eval, String, *], Int] =
