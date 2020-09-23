@@ -29,6 +29,8 @@ package object endpoints {
   }
   lazy implicit val PurchaseLotCodec: Codec[PurchaseLot] = deriveCodec
   lazy implicit val PurchaseCodec:Codec[Purchase]=deriveCodec
+  lazy implicit val PurchaseDecoder:Decoder[Purchase]=deriveDecoder
+
   lazy implicit val PurchaseInfoCodec:Codec[PurchaseInfo]=deriveCodec
   lazy implicit val PositionCodec:Codec[Position]=deriveCodec
   lazy implicit val UserCodec:Codec[User]=deriveCodec

@@ -8,7 +8,7 @@ class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
 
   def createPurchase(purchase: Purchase)(implicit M: Monad[F]):EitherT[F,PurchaseAlreadyExists,Purchase]= {
   for{
-    _ <- validation.doesNotExist(purchase.description,purchase.purchaseInfo)
+   _ <- validation.doesNotExist(purchase.description,purchase.purchaseInfo)
     saved <- EitherT.liftF(repository.createPurchase(purchase))
   } yield saved
   }

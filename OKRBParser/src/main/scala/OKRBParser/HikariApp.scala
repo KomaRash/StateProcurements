@@ -2,10 +2,11 @@ package OKRBParser
 
 import OKRBParser.config.{DatabaseConfig, RepositoryConfig}
 import OKRBParser.domain.parseExcel.okrb.OKRBParseService
+import OKRBParser.domain.purchase.{PurchaseService, PurchaseValidationInterpreter}
 import OKRBParser.infrastructure.endpoints.{OKRBEndpoints, PurchaseEndpoints}
 import OKRBParser.infrastructure.parseExcel.ParseErrorInterpreter
 import OKRBParser.infrastructure.parseExcel.okrb.OKRBParseInterpreter
-import OKRBParser.infrastructure.repository.Postgres.PostgresOKRBRepositoryInterpreter
+import OKRBParser.infrastructure.repository.Postgres.{PostgresOKRBRepositoryInterpreter, PostgresPurchaseRepositoryInterpreter}
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
 import cats.syntax.functor._
 import doobie.util.ExecutionContexts
@@ -33,7 +34,9 @@ object TestApp extends IOApp {
     database=new PostgresOKRBRepositoryInterpreter[F](transactor,10)
     service= new OKRBParseService[F](database,excelParser)
     okrbEndpoint=new OKRBEndpoints[F](service)
-    purchaseEndpoint=new PurchaseEndpoints[F]
+    purchaseRepository=new PostgresPurchaseRepositoryInterpreter[F](transactor,10)
+    purchaseService=new PurchaseService[F](purchaseRepository,new PurchaseValidationInterpreter[F](purchaseRepository))
+    purchaseEndpoint=new PurchaseEndpoints[F](purchaseService)
     server <- (BlazeServerBuilder[F]
       .bindHttp(8080,"127.0.0.1")
       .withHttpApp(purchaseEndpoint.endpoint.orNotFound)

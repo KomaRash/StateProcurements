@@ -2,17 +2,15 @@ package OKRBParser.domain.purchase
 
 import java.util.Date
 
-import OKRBParser.domain.position.Position
-
 case class Purchase(purchaseInfo: PurchaseInfo,
                     description:String,
                     purchaseStatus:PurchaseStatus,
                     purchaseLots:List[PurchaseLot]=List(),
                     purchaseId:Option[PurchaseId]=None)
 
-case class PurchaseInfo(dateOfPurchase:Date,
-                        position: Position,
-                        procedureName:String)
+case class PurchaseInfo( dateOfPurchase:Date,
+                         positionId: PositionId,
+                         procedureName:String)
 
 /**
 create table if not exists Purchase
