@@ -1,11 +1,11 @@
 package OKRBParser.domain.purchase
 
-import java.util.Date
-
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
+import org.joda.time.DateTime
+case class templ(purchaseId:Option[PurchaseId], purchaseLots:List[PurchaseLot])
 
 case class PurchaseLot(okrb:OKRBProduct,
-                       deadline:Date,
+                       deadline:DateTime,
                        amount:Float,
                        name:String,
                        lotId:Option[Int]=None)

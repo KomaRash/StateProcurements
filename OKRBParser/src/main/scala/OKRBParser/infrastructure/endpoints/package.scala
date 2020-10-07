@@ -1,28 +1,24 @@
 package OKRBParser.infrastructure
 
-import java.util.Date
-
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User}
-import OKRBParser.domain.purchase.{Purchase, PurchaseInfo, PurchaseLot}
+import OKRBParser.domain.purchase.{Purchase, PurchaseInfo, PurchaseLot, templ}
 import io.circe._
-import io.circe.syntax._
 import io.circe.generic.semiauto._
+import io.circe.syntax._
+import org.joda.time.DateTime
+import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 
 import scala.util.control.NonFatal
 package object endpoints {
-/*
-  lazy implicit val dEncoder: Encoder[D] = deriveEncoder[D]
-  lazy implicit val dDecoder: Decoder[D] = deriveDecoder[D]
-*/
-
-
+  val dateFormatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
+  lazy implicit val templCodec:Codec[templ]=deriveCodec
   lazy implicit val OKRBProductEncoder:Encoder[OKRBProduct]=deriveEncoder[OKRBProduct]
   lazy implicit val OKRBProductDecoder:Decoder[OKRBProduct]=deriveDecoder[OKRBProduct]
-  lazy implicit val DateEncoder:Encoder[Date]=(a:Date)=>a.toString.asJson
-  implicit val decodeDateTime: Decoder[Date] = Decoder.decodeString.emap { s =>
+  lazy implicit val DateEncoder:Encoder[DateTime]=(a:DateTime)=>a.toString(dateFormatter).asJson
+  implicit val decodeDateTime: Decoder[DateTime] = Decoder.decodeString.emap { s =>
     try {
-      Right(new Date(s))
+      Right(DateTime.parse(s, dateFormatter))
     } catch {
       case NonFatal(e) => Left(e.getMessage)
     }

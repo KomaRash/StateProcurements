@@ -6,6 +6,8 @@ import cats.data.EitherT
 class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
                             validation:PurchaseValidationAlgebra[F]){
 
+
+
   def createPurchase(purchase: Purchase)(implicit M: Monad[F]):EitherT[F,PurchaseAlreadyExists,Purchase]= {
   for{
    _ <- validation.doesNotExist(purchase.description,purchase.purchaseInfo)

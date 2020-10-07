@@ -1,9 +1,8 @@
 package OKRBParser.infrastructure.endpoints
-import java.util.Date
-
+import OKRBParser.domain.PurchaseAlreadyExists
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User}
-import OKRBParser.domain.purchase.{Purchase, PurchaseInfo, PurchaseLot, PurchaseService, PurchaseStatus}
+import OKRBParser.domain.purchase._
 import cats.Monad
 import cats.effect.ConcurrentEffect
 import cats.implicits._
@@ -11,6 +10,7 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{EntityDecoder, HttpRoutes}
+import org.joda.time.DateTime
 
 class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F]) extends Http4sDsl[F]{
 
@@ -22,26 +22,40 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F])
   implicit val userDecoder = jsonOf[F,User]
   implicit val okrbProductDecoder = jsonOf[F,OKRBProduct]
   implicit val PurchaseLotsDecoder = jsonOf[F,PurchaseLot]
-  implicit val DateTimeDecoder = jsonOf[F,Date]
+  implicit val DateTimeDecoder = jsonOf[F,DateTime]
+  implicit val lotsEncoder = jsonOf[F,templ]
+
 
 
 
   def endpoint:HttpRoutes[F]=HttpRoutes.of[F] {
-    case req@POST -> Root / "TestPurchases" => {
-      val purchaseInfo:PurchaseInfo=PurchaseInfo(/*new Date(18,6,1999),*/1,"Аукцион")
+/*    case req@POST -> Root / "TestPurchases" => {
       val purchase: Purchase=Purchase(purchaseInfo,"template",PurchaseStatus.Execution,List())
       Ok(purchase)
-    }
+    }*/
+   /* case  GET->Root=>{
+      Ok(service.testGet())
+    }*/
     case req@POST -> Root /"test" =>{
       Ok(req.as[Purchase])
     }
+    case req@POST -> Root /"AddLots"=>{
+     val purchase=for {
+     idlots <-req.as[templ]
+      p<-service.addLots(idlots.purchaseId,idlots.purchaseLots).value
+     }yield p
+      purchase.flatMap{
+        case Right(value) =>Ok(value)
+        case Left(value)=>Ok(value.toString)
+      }
+    }
     case req@POST -> Root / "AddPurchases"=>{
-      val a=for{
+      val purchases=for{
         purchase<-req.as[Purchase]
         p<- service.createPurchase(purchase).value
       }yield p
-      a.flatMap {
-        case Left(value) => Ok("создано")
+      purchases.flatMap {
+        case Left(PurchaseAlreadyExists(purchase)) => Ok(s"создано ${purchase.purchaseId}")
         case Right(value) =>Ok(value)
       }
     }

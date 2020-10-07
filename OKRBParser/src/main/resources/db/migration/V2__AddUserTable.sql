@@ -7,5 +7,6 @@ CREATE TABLE if not exists Users
     userEmail      varchar(255) not null,
     userPassword   varchar(255) not null,
     MilitaryRank   varchar(30)  not null,
+    PositionId     integer,
     constraint Users_pk primary key (UserId)
 );

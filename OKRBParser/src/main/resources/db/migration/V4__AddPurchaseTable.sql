@@ -8,8 +8,8 @@ create table if not exists Purchase
 );
 create table if not exists PurchaseLot(
     PurchaseLotId SERIAL primary key ,
-    PurchaseId SERIAL,
-    ProductId SERIAL,
+    PurchaseId Integer,
+    ProductId Integer,
     Deadline date,
     LotAmount float,
     LotName varchar(255) not null,

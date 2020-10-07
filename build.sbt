@@ -60,6 +60,7 @@ lazy val http4sDependency = Seq(
   "io.circe" %% "circe-generic" % "0.13.0",
   "io.circe" %% "circe-literal" % "0.13.0",
   "io.circe" %% "circe-parser" % "0.13.0",
-  "com.beachape" %% "enumeratum-circe" % "1.6.1"
+  "com.beachape" %% "enumeratum-circe" % "1.6.1",
+  "joda-time" % "joda-time" % "2.10.6"
 
 )

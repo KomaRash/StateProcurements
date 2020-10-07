@@ -1,14 +1,14 @@
 package OKRBParser.domain.purchase
 
-import java.util.Date
 
+import org.joda.time.DateTime
 case class Purchase(purchaseInfo: PurchaseInfo,
                     description:String,
                     purchaseStatus:PurchaseStatus,
                     purchaseLots:List[PurchaseLot]=List(),
                     purchaseId:Option[PurchaseId]=None)
 
-case class PurchaseInfo( dateOfPurchase:Date,
+case class PurchaseInfo( dateOfPurchase:DateTime,
                          positionId: PositionId,
                          procedureName:String)
 
