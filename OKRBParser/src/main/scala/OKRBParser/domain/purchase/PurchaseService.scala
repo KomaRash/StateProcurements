@@ -8,23 +8,30 @@ class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
 
 
 
-  def createPurchase(purchase: Purchase)(implicit M: Monad[F]):EitherT[F,PurchaseAlreadyExists,Purchase]= {
+  def createPurchase(purchase: Purchase)(implicit M: Monad[F]):EitherT[F,PurchaseAlreadyExists,Option[Purchase]]= {
   for{
    _ <- validation.doesNotExist(purchase.description,purchase.purchaseInfo)
     saved <- EitherT.liftF(repository.createPurchase(purchase))
   } yield saved
+
   }
-  def addLots(purchaseId: Option[PurchaseId],lots:List[PurchaseLot])(implicit M: Monad[F]): EitherT[F, PurchaseError, Purchase] =
+  def addLots(purchaseId: Option[PurchaseId],lots:List[PurchaseLot])(implicit M: Monad[F]): EitherT[F, PurchaseError, Option[Purchase]] =
     for{
       _<-validation.exist(purchaseId)
       _<-validation.doesNotCreated(purchaseId)
       id<-EitherT.fromOption(purchaseId,PurchaseNotFound)
       saved <-EitherT.liftF(repository.addLots(id,lots))
     } yield saved
-  def confirmCreatePurchase(purchase: Purchase): Unit ={
-/*    for{
+  def confirmCreatePurchase(purchase: Purchase)(implicit M: Monad[F]):EitherT[F, PurchaseError, Option[Purchase]]={
+      for{
       _<-validation.compare(purchase)
-      saved <-EitherT.liftF(purchase)
-    }yield */
+      id<-EitherT.fromOption(purchase.purchaseId,PurchaseNotFound)
+      purchase<-EitherT.liftF(repository.setStatus(PurchaseStatus.Execution,id))
+    }yield purchase
   }
+
+  def getPurchaseList:F[List[Purchase]]={
+    repository.getPurchaseList
+  }
+
 }

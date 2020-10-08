@@ -2,6 +2,7 @@ package OKRBParser.infrastructure.repository.Postgres
 
 import java.util.Date
 
+import OKRBParser.domain.parseExcel.okrb.OKRBProduct
 import OKRBParser.domain.purchase._
 import cats.data.OptionT
 import cats.effect.Sync
@@ -24,6 +25,11 @@ object PurchaseSql{
           List(),
           p._1.some)
     }
+  implicit val readPurchaseLot:Read[PurchaseLot]=Read[(Int,Date,Float,String,Int,Int,Int,Int,Int,String)].map{
+    l=>
+      PurchaseLot(OKRBProduct(l._6,l._7,l._8,l._9,l._10,l._5.some),
+        new DateTime(l._2),l._3,l._4,l._1.some)
+  }
   def selectList={
     sql"""Select * from purchase""".
       query[Purchase]
@@ -36,8 +42,17 @@ object PurchaseSql{
     sql"""SELECT * FROM purchase where description=${description}""".
       query[Purchase]
   }
+  def selectPurchaseLots(purchaseId: PurchaseId): doobie.Query0[PurchaseLot] ={
+    sql"""select  p.purchaselotid,p.deadline,p.lotamount,
+         |p.lotname,o.productid, section,
+         | class, subcategories, groupings,
+         |  name from purchaselot as p
+         |  natural join okrb as o
+         |  where purchaseid=$purchaseId""".stripMargin.
+      query[PurchaseLot]
+  }
   def insertPurchase(purchase: Purchase): doobie.Update0 ={
-    sql"""insert into purchase(description, dateofpurchase,positionid, procedurename,status) VALUES (
+    sql"""insert into purchase (description, dateofpurchase,positionid, procedurename,status) VALUES (
          |${purchase.description},
          |${purchase.purchaseInfo.dateOfPurchase.toDate},
          |${purchase.purchaseInfo.positionId},
@@ -74,23 +89,20 @@ class PostgresPurchaseRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
       .transact(tx)
   }
 
-  override def createPurchase(purchase: Purchase): F[Purchase] = {
-       insertPurchase(purchase).
-       run.
-       map(id=>purchase.copy(purchaseId = id.some)).
-       transact(tx)
-
+  override def createPurchase(purchase: Purchase): F[Option[Purchase]] = {
+    for {
+      _<-insertPurchase(purchase).run.transact(tx)
+      purchase<-findByInfoAndDescription(purchase.description,purchase.purchaseInfo).value
+    }yield purchase
   }
-  override def addLots(purchaseId: Int, purchaseLots: List[PurchaseLot]): F[Purchase] = {
-    insertLots(purchaseLots,purchaseId)
-      .transact(tx)
-      .flatMap {
-        _ =>
-          selectById(purchaseId)
-            .option
-            .transact(tx)
-            .map(_.get.copy(purchaseLots=purchaseLots))
-      }
+  override def addLots(purchaseId: Int, purchaseLots: List[PurchaseLot]): F[Option[Purchase]] = {
+    for {
+      _ <- insertLots(purchaseLots, purchaseId).transact(tx)
+      purchase <- getPurchase(purchaseId)
+      purchaseLots <- getPurchaseLots(purchaseId)
+      p=purchase.map(_.copy(purchaseLots=purchaseLots))
+    }yield p
+
   }
 
   override def getPurchaseList: F[List[Purchase]] = {
@@ -106,17 +118,28 @@ class PostgresPurchaseRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
   override def maxThreadPool(): Int = ???
 
   override def setStatus(purchaseStatus: PurchaseStatus, purchaseId: PurchaseId): F[Option[Purchase]] = {
-    updateStatus(purchaseStatus,purchaseId)
-      .option
-      .transact(tx)
+    updateStatus(purchaseStatus,purchaseId).
+      option.
+      transact(tx)
   }
 
   override def getStatus(id: PurchaseId): F[Option[PurchaseStatus]] = {
-  selectById(id).
-    option.
-    transact(tx).
-    map(_.map(_.purchaseStatus))
+    selectById(id).
+      option.
+      transact(tx).
+      map(_.map(_.purchaseStatus))
   }
 
-  override def getPurchaseWithLots(id: PurchaseId): F[Option[Purchase]] = ???
+  override def getPurchaseLots(id:PurchaseId):F[List[PurchaseLot]]={
+    selectPurchaseLots(id).
+      to[List].
+      transact(tx)
+  }
+  override def getPurchaseWithLots(id: PurchaseId): F[Option[Purchase]] = {
+    for{
+      purchase<-getPurchase(id)
+      purchaseLots<-getPurchaseLots(id)
+      purchaseWithLots = purchase.map(_.copy(purchaseLots = purchaseLots))
+    }yield purchaseWithLots
+  }
 }

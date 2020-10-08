@@ -1,5 +1,5 @@
 package OKRBParser.infrastructure.endpoints
-import OKRBParser.domain.{PurchaseAlreadyExecution, PurchaseAlreadyExists, PurchaseNotFound}
+import OKRBParser.domain.{NotCorrectDataPurchase, PurchaseAlreadyExecution, PurchaseAlreadyExists, PurchaseNotFound}
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User}
 import OKRBParser.domain.purchase._
@@ -12,6 +12,8 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.{EntityDecoder, HttpRoutes}
 import org.joda.time.DateTime
 
+import scala.util.Try
+
 class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F]) extends Http4sDsl[F]{
 
 
@@ -23,7 +25,7 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F])
   implicit val okrbProductDecoder = jsonOf[F,OKRBProduct]
   implicit val PurchaseLotsDecoder = jsonOf[F,PurchaseLot]
   implicit val DateTimeDecoder = jsonOf[F,DateTime]
-  implicit val lotsEncoder = jsonOf[F,LotsWithPurchaseID]
+  implicit val lotsEncoder = jsonOf[F,List[PurchaseLot]]
 
 
 
@@ -39,10 +41,16 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F])
     case req@POST -> Root /"test" =>{
       Ok(req.as[Purchase])
     }
-    case req@POST -> Root /"AddLots"=>{
+    case GET->Root/"purchases"=>{
+      Ok(service.getPurchaseList)
+    }
+    /**
+     *  Добавление лотов для новой закупки
+     */
+    case req@POST -> Root /"purchase"/id/"lots"=>{
      val purchase=for {
-     idlots <-req.as[LotsWithPurchaseID]
-      p<-service.addLots(idlots.purchaseId,idlots.purchaseLots).value
+     lots <-req.as[List[PurchaseLot]]
+      p<-service.addLots(Try(id.toInt).toOption,lots).value
      }yield p
       purchase.flatMap{
         case Right(value) =>Ok(value)
@@ -51,14 +59,33 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F])
 
       }
     }
-    case req@POST -> Root / "AddPurchases"=>{
-      val purchases=for{
-        purchase<-req.as[Purchase]
-        p<- service.createPurchase(purchase).value
-      }yield p
+
+    /**
+     *  Добавление новой закупки
+     */
+    case req@POST -> Root / "purchase"=> {
+      val purchases = for {
+        purchase <- req.as[Purchase]
+        p <- service.createPurchase(purchase).value
+      } yield p
       purchases.flatMap {
         case Left(PurchaseAlreadyExists(purchase)) => Ok(s"создано ${purchase.purchaseId}")
-        case Right(value) =>Ok(value)
+        case Right(value) => Ok(value)
+      }
+    }
+
+    /**
+     * подтверждение и сохраниние закупки
+     */
+    case req@GET->Root/ "purchase"=>{
+    val purchase=for{
+      purchase<-req.as[Purchase]
+      p<-service.confirmCreatePurchase(purchase).value
+    }yield p
+      purchase.flatMap {
+        case Left(PurchaseNotFound) | Right(None)=>Ok("Заявка не найдена")
+        case Right(Some(value)) =>Ok(value)
+        case Left(NotCorrectDataPurchase)=>Ok("Не валидные данные")
       }
     }
   }

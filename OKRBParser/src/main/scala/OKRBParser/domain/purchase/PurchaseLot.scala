@@ -2,7 +2,6 @@ package OKRBParser.domain.purchase
 
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
 import org.joda.time.DateTime
-case class LotsWithPurchaseID(purchaseId:Option[PurchaseId], purchaseLots:List[PurchaseLot])
 
 case class PurchaseLot(okrb:OKRBProduct,
                        deadline:DateTime,

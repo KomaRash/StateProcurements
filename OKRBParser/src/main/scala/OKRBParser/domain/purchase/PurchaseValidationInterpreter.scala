@@ -1,6 +1,6 @@
 package OKRBParser.domain.purchase
-import OKRBParser.domain.purchase.PurchaseStatus.InProcess
-import OKRBParser.domain.{PurchaseAlreadyExecution, PurchaseAlreadyExists, PurchaseError, PurchaseNotFound}
+import OKRBParser.domain.purchase.PurchaseStatus.CreatedPurchase
+import OKRBParser.domain._
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
@@ -15,7 +15,7 @@ class PurchaseValidationInterpreter[F[_]:Monad](repository: PurchaseRepositoryAl
 
   override def exist(purchaseId: Option[PurchaseId]): EitherT[F, PurchaseNotFound.type, Unit] = {
     purchaseId match {
-      case Some(id) => EitherT.fromOptionF(repository.getPurchase(id),PurchaseNotFound).map(_ =>())
+      case Some(id) => EitherT.fromOptionF(repository.getPurchase(id),PurchaseNotFound).as(())
       case None =>EitherT.fromEither(Left(PurchaseNotFound))
     }
   }
@@ -24,7 +24,7 @@ class PurchaseValidationInterpreter[F[_]:Monad](repository: PurchaseRepositoryAl
      purchaseId match {
       case Some(id) =>
       EitherT{repository.getStatus(id).map {
-        case Some(InProcess) =>().asRight
+        case Some(CreatedPurchase) =>().asRight
         case None=>PurchaseNotFound.asLeft
         case _ => PurchaseAlreadyExecution.asLeft
         }
@@ -35,8 +35,11 @@ class PurchaseValidationInterpreter[F[_]:Monad](repository: PurchaseRepositoryAl
 
   override def compare(purchase: Purchase): EitherT[F, PurchaseError, Unit] = {
     purchase.purchaseId match {
-      case Some(purchaseId) =>repository.getPurchase()
-      case None =>
+      case Some(purchaseId) =>EitherT.fromOptionF(repository.
+        getPurchaseWithLots(purchaseId),PurchaseNotFound).
+        ensure(NotCorrectDataPurchase){p=>purchase.equals(p)}.as(())
+      case None =>EitherT.fromEither(Left(PurchaseNotFound))
     }
+
   }
 }
