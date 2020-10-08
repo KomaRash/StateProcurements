@@ -65,8 +65,8 @@ object PurchaseSql{
     val sql=s"""insert into purchaselot ( lotamount,deadline, lotname,productid,purchaseid) values (?,?,?,?,?);"""
     Update[(PurchaseLot,Int)](sql).updateMany(purchaseLots.map((_,purchaseId)))
   }
-  def updateStatus(purchaseStatus: PurchaseStatus, purchaseId: PurchaseId): doobie.Query0[Purchase] ={
-    sql"""update purchase set status=${purchaseStatus.toString()} where purchaseid=$purchaseId""".query[Purchase]
+  def updateStatus(purchaseStatus: PurchaseStatus, purchaseId: PurchaseId)={
+    sql"""update purchase set status=${purchaseStatus.toString()} where purchaseid=$purchaseId""".update
   }
 
 
@@ -118,9 +118,10 @@ class PostgresPurchaseRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
   override def maxThreadPool(): Int = ???
 
   override def setStatus(purchaseStatus: PurchaseStatus, purchaseId: PurchaseId): F[Option[Purchase]] = {
-    updateStatus(purchaseStatus,purchaseId).
-      option.
-      transact(tx)
+    for {
+      _<-updateStatus(purchaseStatus, purchaseId).run.transact(tx)
+      purchase<-getPurchaseWithLots(purchaseId)
+    }yield purchase
   }
 
   override def getStatus(id: PurchaseId): F[Option[PurchaseStatus]] = {

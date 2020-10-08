@@ -31,13 +31,7 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F])
 
 
   def endpoint:HttpRoutes[F]=HttpRoutes.of[F] {
-/*    case req@POST -> Root / "TestPurchases" => {
-      val purchase: Purchase=Purchase(purchaseInfo,"template",PurchaseStatus.Execution,List())
-      Ok(purchase)
-    }*/
-   /* case  GET->Root=>{
-      Ok(service.testGet())
-    }*/
+
     case req@POST -> Root /"test" =>{
       Ok(req.as[Purchase])
     }
