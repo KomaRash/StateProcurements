@@ -2,17 +2,17 @@ package OKRBParser.infrastructure
 
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User}
-import OKRBParser.domain.purchase.{Purchase, PurchaseInfo, PurchaseLot, templ}
+import OKRBParser.domain.purchase.{Purchase, PurchaseInfo, PurchaseLot, LotsWithPurchaseID}
 import io.circe._
 import io.circe.generic.semiauto._
 import io.circe.syntax._
 import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-
 import scala.util.control.NonFatal
+
 package object endpoints {
   val dateFormatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-  lazy implicit val templCodec:Codec[templ]=deriveCodec
+  lazy implicit val lotsWithPurchaseIDCodec:Codec[LotsWithPurchaseID]=deriveCodec
   lazy implicit val OKRBProductEncoder:Encoder[OKRBProduct]=deriveEncoder[OKRBProduct]
   lazy implicit val OKRBProductDecoder:Decoder[OKRBProduct]=deriveDecoder[OKRBProduct]
   lazy implicit val DateEncoder:Encoder[DateTime]=(a:DateTime)=>a.toString(dateFormatter).asJson
@@ -26,7 +26,6 @@ package object endpoints {
   lazy implicit val PurchaseLotCodec: Codec[PurchaseLot] = deriveCodec
   lazy implicit val PurchaseCodec:Codec[Purchase]=deriveCodec
   lazy implicit val PurchaseDecoder:Decoder[Purchase]=deriveDecoder
-
   lazy implicit val PurchaseInfoCodec:Codec[PurchaseInfo]=deriveCodec
   lazy implicit val PositionCodec:Codec[Position]=deriveCodec
   lazy implicit val UserCodec:Codec[User]=deriveCodec

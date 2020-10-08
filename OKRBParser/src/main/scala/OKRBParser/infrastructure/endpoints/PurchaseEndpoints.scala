@@ -1,5 +1,5 @@
 package OKRBParser.infrastructure.endpoints
-import OKRBParser.domain.PurchaseAlreadyExists
+import OKRBParser.domain.{PurchaseAlreadyExecution, PurchaseAlreadyExists, PurchaseNotFound}
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User}
 import OKRBParser.domain.purchase._
@@ -23,7 +23,7 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F])
   implicit val okrbProductDecoder = jsonOf[F,OKRBProduct]
   implicit val PurchaseLotsDecoder = jsonOf[F,PurchaseLot]
   implicit val DateTimeDecoder = jsonOf[F,DateTime]
-  implicit val lotsEncoder = jsonOf[F,templ]
+  implicit val lotsEncoder = jsonOf[F,LotsWithPurchaseID]
 
 
 
@@ -41,12 +41,14 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F])
     }
     case req@POST -> Root /"AddLots"=>{
      val purchase=for {
-     idlots <-req.as[templ]
+     idlots <-req.as[LotsWithPurchaseID]
       p<-service.addLots(idlots.purchaseId,idlots.purchaseLots).value
      }yield p
       purchase.flatMap{
         case Right(value) =>Ok(value)
-        case Left(value)=>Ok(value.toString)
+        case Left(PurchaseAlreadyExecution)=>Ok("заявка уже выполняется")
+        case Left(PurchaseNotFound)=>Ok("заявка не найдена")
+
       }
     }
     case req@POST -> Root / "AddPurchases"=>{
