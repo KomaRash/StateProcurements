@@ -30,7 +30,7 @@ object PurchaseSql{
       PurchaseLot(OKRBProduct(l._6,l._7,l._8,l._9,l._10,l._5.some),
         new DateTime(l._2),l._3,l._4,l._1.some)
   }
-  def selectList={
+  def selectList: doobie.Query0[Purchase] ={
     sql"""Select * from purchase""".
       query[Purchase]
   }
@@ -65,12 +65,15 @@ object PurchaseSql{
     val sql=s"""insert into purchaselot ( lotamount,deadline, lotname,productid,purchaseid) values (?,?,?,?,?);"""
     Update[(PurchaseLot,Int)](sql).updateMany(purchaseLots.map((_,purchaseId)))
   }
-  def updateStatus(purchaseStatus: PurchaseStatus, purchaseId: PurchaseId)={
+  def updateStatus(purchaseStatus: PurchaseStatus, purchaseId: PurchaseId): doobie.Update0 ={
     sql"""update purchase set status=${purchaseStatus.toString()} where purchaseid=$purchaseId""".update
   }
-
-
-
+  def updateLot(id: Option[PurchaseId], lot: PurchaseLot): doobie.Update0 = {
+    sql"""update purchaseLot set lotamount=${lot.amount},
+         |deadline=${lot.deadline.toDate},
+         |productid=${lot.okrb.okrbId},
+         |lotname=${lot.name} where purchaselotid=$id""".stripMargin.update
+  }
 }
 class PostgresPurchaseRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
                                                        maxThreadPool:Int) extends PurchaseRepositoryAlgebra[F] {
@@ -142,5 +145,8 @@ class PostgresPurchaseRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
       purchaseLots<-getPurchaseLots(id)
       purchaseWithLots = purchase.map(_.copy(purchaseLots = purchaseLots))
     }yield purchaseWithLots
+  }
+  override def updateLotInfo(id: Option[PurchaseId], lot: PurchaseLot): F[PurchaseLot] = {
+    updateLot(id,lot).run.transact(tx).map(_=>lot)
   }
 }

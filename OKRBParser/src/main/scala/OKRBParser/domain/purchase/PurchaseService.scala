@@ -5,7 +5,13 @@ import cats.Monad
 import cats.data.EitherT
 class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
                             validation:PurchaseValidationAlgebra[F]){
-
+  def updateLot(id: Option[PurchaseId], lot: PurchaseLot)(implicit M: Monad[F]): EitherT[F, PurchaseError, PurchaseLot] = {
+    for{
+      _<-validation.exist(id)
+      _<-validation.lotExist(id,lot)
+      saved<-EitherT.liftF(repository.updateLotInfo(id,lot))
+    }yield saved
+  }
 
 
   def createPurchase(purchase: Purchase)(implicit M: Monad[F]):EitherT[F,PurchaseAlreadyExists,Option[Purchase]]= {

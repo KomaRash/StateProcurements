@@ -4,6 +4,8 @@ import OKRBParser.domain.parseExcel.RepositoryAlgebra
 import cats.data.OptionT
 
 trait PurchaseRepositoryAlgebra[F[_]] extends RepositoryAlgebra[F] {
+  def updateLotInfo(id: Option[PurchaseId], lot: PurchaseLot): F[PurchaseLot]
+
   def getStatus(id: PurchaseId): F[Option[PurchaseStatus]]
 
   def getPurchase(id: PurchaseId): F[Option[Purchase]]

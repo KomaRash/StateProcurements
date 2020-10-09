@@ -1,5 +1,5 @@
 package OKRBParser.infrastructure.endpoints
-import OKRBParser.domain.{NotCorrectDataPurchase, PurchaseAlreadyExecution, PurchaseAlreadyExists, PurchaseNotFound}
+import OKRBParser.domain.{NotCorrectDataPurchase, PurchaseAlreadyExecution, PurchaseAlreadyExists, PurchaseLotNotFound, PurchaseNotFound}
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User}
 import OKRBParser.domain.purchase._
@@ -53,8 +53,19 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F])
 
       }
     }
+    case req@PUT -> Root /"purchase"/id/"lots"=> {
+    val purchaseLot=for{
+      lot<-req.as[PurchaseLot]
+      p<-service.updateLot(Try(id.toInt).toOption,lot).value
+    }yield p
+      purchaseLot.flatMap {
+        case Left(PurchaseNotFound) => Ok("заявка не найдена")
+        case Right(value) =>Ok(value)
+        case Left(PurchaseLotNotFound)=>Ok("лот не найден")
+      }
+    }
 
-    /**
+      /**
      *  Добавление новой закупки
      */
     case req@POST -> Root / "purchase"=> {
