@@ -4,9 +4,7 @@ import OKRBParser.domain._
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
-object templ{
-  type EitherTExp[F[_],T<:PurchaseError]=EitherT[F,T,Unit]
-}
+
 class PurchaseValidationInterpreter[F[_]:Monad](repository: PurchaseRepositoryAlgebra[F])
   extends PurchaseValidationAlgebra[F] {
   override def doesNotExist(description: String, purchaseInfo: PurchaseInfo): EitherT[F, PurchaseAlreadyExists, Unit] = {

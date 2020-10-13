@@ -1,3 +1,3 @@
- import cats._, data._, implicits._
- val a: OptionT[Eval, Int] = 1.pure[OptionT[Eval, *]]
- val b: OptionT[EitherT[Eval, String, *], Int] =
+val a:Map[Int,Int]=Map()
+val b=a+(1->2)
+val c=b+(1->3)

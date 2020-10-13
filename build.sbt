@@ -12,7 +12,8 @@ lazy val okrbParser = project.in(file("OKRBParser")).settings(
   libraryDependencies ++= parserDependency,
   libraryDependencies ++= catsDependency,
   libraryDependencies ++= doobieDependency,
-  libraryDependencies ++= http4sDependency
+  libraryDependencies ++= http4sDependency,
+  libraryDependencies ++= TsecDependency
 )
 
 lazy val parserSettings = Seq(
@@ -46,7 +47,14 @@ lazy val doobieDependency = Seq(
   "org.slf4j" % "slf4j-api" % "1.7.5",
   "ch.qos.logback" % "logback-classic" % "1.0.9")
 
-
+val TsecVersion = "0.2.1"
+lazy val TsecDependency= Seq( "io.github.jmcardon" %% "tsec-common" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-password" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-mac" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-signatures" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-jwt-mac" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-jwt-sig" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-http4s" % TsecVersion)
 lazy val parserDependency = Seq(
   "org.apache.poi" % "poi" % "3.9",
   "org.apache.poi" % "poi-ooxml" % "3.9")
