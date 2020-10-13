@@ -1,12 +1,9 @@
 package OKRBParser
 
 import OKRBParser.config.{DatabaseConfig, RepositoryConfig}
-import OKRBParser.domain.parseExcel.okrb.OKRBParseService
-import OKRBParser.domain.purchase.{PurchaseService, PurchaseValidationInterpreter}
-import OKRBParser.infrastructure.endpoints.{OKRBEndpoints, PurchaseEndpoints}
-import OKRBParser.infrastructure.parseExcel.ParseErrorInterpreter
-import OKRBParser.infrastructure.parseExcel.okrb.OKRBParseInterpreter
-import OKRBParser.infrastructure.repository.Postgres.{PostgresOKRBRepositoryInterpreter, PostgresPurchaseRepositoryInterpreter}
+import OKRBParser.domain.auth.AuthService
+import OKRBParser.infrastructure.endpoints.AuthEndpoints
+import OKRBParser.infrastructure.repository.Postgres.{PostgresAuthRepositoryInterpreter, PostgresUserRepositoryInterpreter}
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
 import cats.syntax.functor._
 import doobie.util.ExecutionContexts
@@ -23,7 +20,7 @@ object TestApp extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     stream[IO].use(_ => IO.never).as(ExitCode.Success)
   }
-
+/*
   def stream[F[_]: ConcurrentEffect: ContextShift: Timer]:Resource[F, H4Server[F]] =for{
     blocker<-(Blocker[F])
     parseAlgebra= new ParseErrorInterpreter[F]()
@@ -41,5 +38,21 @@ object TestApp extends IOApp {
       .bindHttp(8080,"127.0.0.1")
       .withHttpApp(purchaseEndpoint.endpoint.orNotFound)
       .resource)
+  }yield (server)*/
+  def stream[F[_]: ConcurrentEffect: ContextShift: Timer]:Resource[F, H4Server[F]] =for{
+    blocker<-(Blocker[F])
+    fixedThreadPool  <- (ExecutionContexts.fixedThreadPool[F](databaseConfig.poolSize))
+    transactor<-(RepositoryConfig.transactor(databaseConfig,fixedThreadPool,blocker))
+    _<-Resource.liftF(RepositoryConfig.initDb(transactor))
+
+    userRepository=new PostgresUserRepositoryInterpreter[F](transactor)
+    authRepository=new PostgresAuthRepositoryInterpreter[F](transactor)
+    authService=new AuthService[F](userRepository,authRepository)
+    authEndpoints=new AuthEndpoints[F](authService)
+    server <- BlazeServerBuilder[F]
+      .bindHttp(8080,"127.0.0.1")
+      .withHttpApp(authEndpoints.endpoint.orNotFound)
+      .resource
   }yield (server)
+
 }
