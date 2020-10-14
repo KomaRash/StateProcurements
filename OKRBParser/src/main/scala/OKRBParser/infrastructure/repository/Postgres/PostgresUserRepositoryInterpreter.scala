@@ -19,10 +19,10 @@ class PostgresUserRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
   override def addUser(userInfo: User): Unit = ???
 }
 object UserSQL{
-  implicit val userReader:Read[User]=Read[(Int,Int,String,String,String,String,String,String,String,String)].map(u=>
+  implicit val userReader:Read[User]=Read[(Int,Int,String,String,String,String,String,String,String,String,String)].map(u=>
 
     User(Position(
-    u._9,Role.User,
+    u._9,Role.fromRepr(u._11).getOrElse(Role.Unauthorized),
     u._10,u._1.some),
     u._3,u._4,u._5,
     u._6,u._7,u._8,

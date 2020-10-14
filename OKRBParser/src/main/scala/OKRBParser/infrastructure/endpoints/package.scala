@@ -6,11 +6,18 @@ import OKRBParser.domain.purchase.{Purchase, PurchaseInfo, PurchaseLot}
 import io.circe._
 import io.circe.generic.semiauto._
 import io.circe.syntax._
+import org.http4s.Response
 import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
+import tsec.authentication.SecuredRequest
+
 import scala.util.control.NonFatal
 
 package object endpoints {
+
+  type AuthEndpoint[F[_], Auth] =
+    PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]]
+
   val dateFormatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
   lazy implicit val OKRBProductEncoder:Encoder[OKRBProduct]=deriveEncoder[OKRBProduct]
   lazy implicit val OKRBProductDecoder:Decoder[OKRBProduct]=deriveDecoder[OKRBProduct]

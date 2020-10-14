@@ -9,6 +9,7 @@ sealed case class Role(roleRepr: String)
 object Role extends SimpleAuthEnum[Role, String] {
 
   //val Administrator: Role = Role("Administrator")
+  val Unauthorized: Role      = Role("Unauthorized")
   val User: Role      = Role("User")
   val Director: Role  = Role("Director")
 

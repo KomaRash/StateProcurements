@@ -19,7 +19,7 @@ class PostgresAuthRepositoryInterpreter[F[_]:Sync](tx:Transactor[F])
   import AuthSQL._
   import doobie.implicits._
   override def delete(id: SecureRandomId): F[Unit] =
-    deleteFromTable(id).run.transact(tx).as()
+    deleteFromTable(id).run.transact(tx).void
   override def get(id: SecureRandomId): F[Option[TSecBearerToken[UserId]]] =selectById(id).
     option.
     transact(tx)
