@@ -19,7 +19,7 @@ object Auth {
         repository.put(elem)
       }
       override def update(v: TSecBearerToken[UserId]): F[TSecBearerToken[UserId]] ={
-        put(v)
+        repository.update(v)
       }
       override def delete(id: SecureRandomId): F[Unit] = repository.delete(id)
 

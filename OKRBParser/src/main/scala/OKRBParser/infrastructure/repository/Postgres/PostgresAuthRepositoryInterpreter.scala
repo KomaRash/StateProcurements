@@ -29,6 +29,10 @@ class PostgresAuthRepositoryInterpreter[F[_]:Sync](tx:Transactor[F])
   }
 
   override def maxThreadPool(): Int = ???
+
+  override def update(v: TSecBearerToken[UserId]): F[TSecBearerToken[UserId]] = {
+    deleteFromTable(v.identity).run.transact(tx).flatMap(_=>put(v))
+  }
 }
 object AuthSQL{
 
@@ -40,6 +44,8 @@ object AuthSQL{
       TSecBearerToken(x._1.asInstanceOf[SecureRandomId],
       x._2.asInstanceOf[UserId],
       x._3,x._4))
+  def deleteFromTable(identity:UserId): doobie.Update0 =
+    sql"""delete from bearertokens where identity=$identity""".update
 
   def deleteFromTable(id: SecureRandomId): doobie.Update0 =
     sql"""delete from bearertokens where id=$id""".update

@@ -17,7 +17,10 @@ class AuthEndpoints[F[_]:Sync:Monad](authService:AuthService[F])  extends Http4s
   implicit val usernamePasswordCredentials: EntityDecoder[F, UsernamePasswordCredentials] = jsonOf[F, UsernamePasswordCredentials]
 
   val a: TSecAuthService[User, TSecBearerToken[UserId], F] =TSecAuthService[User, TSecBearerToken[UserId], F] {
-    case GET -> Root / "safe-resource" asAuthed user => Ok(s"Hello ${user.position.positionRole}")
+    case req@GET -> Root / "safe-resource" asAuthed user =>
+      val r: SecuredRequest[F, User, TSecBearerToken[UserId]] = req
+
+        authService.bearerTokenAuthenticator.renew(r.authenticator).map(authService.bearerTokenAuthenticator.embed(Response(Status.Ok), _))
   }
   def directorEndpoint: AuthEndpoint[F, TSecBearerToken[UserId]]={
     case GET -> Root / "safe-DirectorResource" asAuthed user => Ok(s"Hello ${user.position.positionRole}")
