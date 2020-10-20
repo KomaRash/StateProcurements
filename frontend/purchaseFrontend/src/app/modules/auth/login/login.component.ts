@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
     public router: Router,
     private fb: FormBuilder,
     private auth:AuthService,
+
   ) {}
 
 
@@ -28,9 +29,12 @@ export class LoginComponent implements OnInit {
 
   }
 
-  login(data){
-  this.auth.login(data.username,data.password)
-  }
+  login(data) {
+    this.auth.login( data.password,data.username)
+    this.router.navigate(['/purchases']);
+    return true;
 
+
+  }
 
 }

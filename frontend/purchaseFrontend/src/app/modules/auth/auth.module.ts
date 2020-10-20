@@ -17,7 +17,7 @@ export const routes: Routes = [
 @NgModule({
   declarations: [LoginComponent],
   imports: [
-    RouterModule.forChild(routes),
+    RouterModule.forRoot(routes),
     CommonModule,
     BrowserModule,
     FormsModule,

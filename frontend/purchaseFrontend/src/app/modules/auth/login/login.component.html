@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-form-container">
       <div class="login-shop-header">
-        <h1><span class="shopblue">ANGULAR</span><span class="shoporange">SHOP</span></h1>
+        <h1><span class="govGreen">Гос</span><span class="govRed">Закупки</span></h1>
       </div>
       <form method="POST" [formGroup]="loginForm">
         <div class="login-form-header">
@@ -10,18 +10,18 @@
         </div>
         <div class="form-group row">
           <div class="col-md-12">
-            <input formControlName="username" type="text" class="form-control" name="username" placeholder="Username">
+            <input formControlName="username" type="text" class="form-control" name="username" placeholder="Имя пользоваетеля">
           </div>
         </div>
         <div class="form-group row">
           <div class="col-md-12">
-            <input formControlName="password" type="password" class="form-control" name="password" placeholder="Password">
+            <input formControlName="password" type="password" class="form-control" name="password" placeholder="Пароль">
           </div>
         </div>
         <div class="form-actions">
           <div class="form-group row">
             <div class="col-md-12 login-submit-container">
-              <button type="button" class="btn btn-primary" type="button" (click)="login(loginForm.value)">Login</button>
+              <button type="button" class="btn btn-primary" type="button" (click)="login(loginForm.value)">Войти в систему</button>
             </div>
           </div>
         </div>

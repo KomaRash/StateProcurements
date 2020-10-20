@@ -1,4 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body{
+  background-color: #f3f3f3;
+}
+
+.govGreen{
+  color: #00ff00;
+}
+
+.shopBlue{
+  color: #1047cb;
+}
+
+.govRed{
+  color: #ff0000;
+}
