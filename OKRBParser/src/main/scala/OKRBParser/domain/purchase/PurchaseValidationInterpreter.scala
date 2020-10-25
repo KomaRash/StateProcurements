@@ -1,6 +1,5 @@
 package OKRBParser.domain.purchase
-import OKRBParser.domain.purchase.PurchaseStatus.CreatedPurchase
-import OKRBParser.domain._
+import OKRBParser.domain.purchase.PurchaseStatus.{CreatedPurchase, InProcess}
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
@@ -14,10 +13,10 @@ class PurchaseValidationInterpreter[F[_]:Monad](repository: PurchaseRepositoryAl
       leftMap(PurchaseAlreadyExists)
     }
 
-  override def exist(purchaseId: Option[PurchaseId]): EitherT[F, PurchaseNotFound.type, Unit] = {
+  override def exist(purchaseId: Option[PurchaseId]): EitherT[F, PurchaseError, Unit] = {
     purchaseId match {
-      case Some(id) => EitherT.fromOptionF(repository.getPurchase(id),PurchaseNotFound).as(())
-      case None =>EitherT.fromEither(Left(PurchaseNotFound))
+      case Some(id) => EitherT.fromOptionF(repository.getPurchase(id),PurchaseNotFound).as(()).asInstanceOf[EitherT[F,PurchaseError,Unit]]
+      case None =>EitherT.fromEither(Left(NotCorrectDataPurchase))
     }
   }
 
@@ -30,7 +29,7 @@ class PurchaseValidationInterpreter[F[_]:Monad](repository: PurchaseRepositoryAl
         case _ => PurchaseAlreadyExecution.asLeft
         }
       }
-      case None => EitherT.fromEither(PurchaseNotFound.asLeft)
+      case None => EitherT.fromEither(NotCorrectDataPurchase.asLeft)
     }
     }
 
@@ -39,7 +38,7 @@ class PurchaseValidationInterpreter[F[_]:Monad](repository: PurchaseRepositoryAl
       case Some(purchaseId) =>EitherT.fromOptionF(repository.
         getPurchaseWithLots(purchaseId),PurchaseNotFound).
         ensure(NotCorrectDataPurchase){p=>purchase.equals(p)}.as(())
-      case None =>EitherT.fromEither(Left(PurchaseNotFound))
+      case None =>EitherT.fromEither(Left(NotCorrectDataPurchase))
     }
 
   }
@@ -49,7 +48,18 @@ class PurchaseValidationInterpreter[F[_]:Monad](repository: PurchaseRepositoryAl
       case Some(id) => EitherT.
         fromOptionF(repository.getPurchaseLots(id).map(_.find(_.lotId==lot.lotId)),PurchaseLotNotFound).
         as().asInstanceOf[ EitherT[F, PurchaseError, Unit]]
-      case None =>EitherT.fromEither(PurchaseNotFound.asLeft)
+      case None =>EitherT.fromEither(NotCorrectDataPurchase.asLeft)
+    }
+  }
+
+  override def alreadyExecution(purchaseId: Option[PurchaseId]): EitherT[F, PurchaseError, Unit] = {
+    purchaseId match {
+      case Some(id) =>
+        EitherT.fromOptionF(repository.getStatus(id),PurchaseNotFound).
+          ensure(PurchaseAlreadyExecution){
+            status=>status==InProcess
+        }.as()
+      case None =>EitherT.fromEither(NotCorrectDataPurchase.asLeft)
     }
   }
 }

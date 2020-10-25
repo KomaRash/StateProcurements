@@ -3,6 +3,7 @@ package OKRBParser.infrastructure.repository.Postgres
 import java.util.Date
 
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
+import OKRBParser.domain.position.{PositionId, UserId}
 import OKRBParser.domain.purchase._
 import cats.data.OptionT
 import cats.effect.Sync
@@ -30,8 +31,8 @@ object PurchaseSql{
       PurchaseLot(OKRBProduct(l._6,l._7,l._8,l._9,l._10,l._5.some),
         new DateTime(l._2),l._3,l._4,l._1.some)
   }
-  def selectList: doobie.Query0[Purchase] ={
-    sql"""Select * from purchase""".
+  def selectList(userId: UserId): doobie.Query0[Purchase] ={
+    sql"""Select * from purchase where positionid=(select positionid from users where userid=$userId)""".
       query[Purchase]
   }
   def selectById(id: PurchaseId): doobie.Query0[Purchase] ={
@@ -51,11 +52,11 @@ object PurchaseSql{
          |  where purchaseid=$purchaseId""".stripMargin.
       query[PurchaseLot]
   }
-  def insertPurchase(purchase: Purchase): doobie.Update0 ={
+  def insertPurchase(purchase: Purchase,positionId: Option[PositionId]): doobie.Update0 ={
     sql"""insert into purchase (description, dateofpurchase,positionid, procedurename,status) VALUES (
          |${purchase.description},
          |${purchase.purchaseInfo.dateOfPurchase.toDate},
-         |${purchase.purchaseInfo.positionId},
+         |$positionId,
          |${purchase.purchaseInfo.procedureName},
          |${purchase.purchaseStatus.toString})""".
       stripMargin.
@@ -92,9 +93,9 @@ class PostgresPurchaseRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
       .transact(tx)
   }
 
-  override def createPurchase(purchase: Purchase): F[Option[Purchase]] = {
+  override def createPurchase(purchase: Purchase, positionId: Option[PositionId]): F[Option[Purchase]] = {
     for {
-      _<-insertPurchase(purchase).run.transact(tx)
+      _<-insertPurchase(purchase,positionId).run.transact(tx)
       purchase<-findByInfoAndDescription(purchase.description,purchase.purchaseInfo).value
     }yield purchase
   }
@@ -108,8 +109,8 @@ class PostgresPurchaseRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
 
   }
 
-  override def getPurchaseList: F[List[Purchase]] = {
-    selectList.to[List].transact(tx)
+  override def getPurchaseList(userId: UserId): F[List[Purchase]] = {
+    selectList(userId).to[List].transact(tx)
   }
 
   override def findByInfoAndDescription(description: String, purchaseInfo: PurchaseInfo): OptionT[F, Purchase] = {

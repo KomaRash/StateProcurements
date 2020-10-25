@@ -2,14 +2,16 @@ package OKRBParser
 
 import OKRBParser.config.{DatabaseConfig, RepositoryConfig}
 import OKRBParser.domain.auth.AuthService
-import OKRBParser.infrastructure.endpoints.AuthEndpoints
-import OKRBParser.infrastructure.repository.Postgres.{PostgresAuthRepositoryInterpreter, PostgresUserRepositoryInterpreter}
+import OKRBParser.domain.purchase.PurchaseService
+import OKRBParser.infrastructure.endpoints.{AuthEndpoints, PurchaseEndpoints}
+import OKRBParser.infrastructure.repository.Postgres.{PostgresAuthRepositoryInterpreter, PostgresPurchaseRepositoryInterpreter, PostgresUserRepositoryInterpreter}
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
-import cats.syntax.functor._
+import cats.implicits._
 import doobie.util.ExecutionContexts
+import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.{Server => H4Server}
-import org.http4s.syntax.kleisli._
+
 
 object TestApp extends IOApp {
   val databaseConfig=DatabaseConfig("org.postgresql.Driver",     // driver classname
@@ -47,12 +49,16 @@ object TestApp extends IOApp {
 
     userRepository=new PostgresUserRepositoryInterpreter[F](transactor)
     authRepository=new PostgresAuthRepositoryInterpreter[F](transactor)
+    purchaseRepository=new PostgresPurchaseRepositoryInterpreter[F](transactor,10)
+    purchaseService=PurchaseService.service(purchaseRepository)
     authService=new AuthService[F](userRepository,authRepository)
-    authEndpoints=new AuthEndpoints[F](authService)
+    purchaseEndpoints=PurchaseEndpoints.endpoints(purchaseService,authService)
+    authEndpoints=AuthEndpoints.endpoints(authService)
+    endpoints=authEndpoints<+>purchaseEndpoints
     server <- BlazeServerBuilder[F]
       .bindHttp(8080,"127.0.0.1")
-      .withHttpApp(authEndpoints.endpoint.orNotFound)
+      .withHttpApp(endpoints.orNotFound)
       .resource
-  }yield (server)
+  }yield server
 
 }

@@ -1,7 +1,7 @@
 package OKRBParser.infrastructure
 
 import OKRBParser.domain.parseExcel.okrb.OKRBProduct
-import OKRBParser.domain.position.{Position, User}
+import OKRBParser.domain.position.{Position, User, UserId, UsernamePasswordCredentials}
 import OKRBParser.domain.purchase.{Purchase, PurchaseInfo, PurchaseLot}
 import io.circe._
 import io.circe.generic.semiauto._
@@ -9,14 +9,15 @@ import io.circe.syntax._
 import org.http4s.Response
 import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import tsec.authentication.SecuredRequest
+import tsec.authentication.{SecuredRequest, TSecBearerToken}
 
 import scala.util.control.NonFatal
 
 package object endpoints {
-
+  type Token=TSecBearerToken[UserId]
   type AuthEndpoint[F[_], Auth] =
     PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]]
+  implicit val UsernamePasswordCredentialsCodec: Codec[UsernamePasswordCredentials] =deriveCodec
 
   val dateFormatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
   lazy implicit val OKRBProductEncoder:Encoder[OKRBProduct]=deriveEncoder[OKRBProduct]

@@ -1,10 +1,8 @@
-package OKRBParser.domain
+package OKRBParser.domain.purchase
 
-import OKRBParser.domain.purchase.Purchase
+import OKRBParser.domain.Err
 
-sealed trait Errors extends Product with Serializable
-
-sealed trait PurchaseError extends Errors
+sealed trait PurchaseError extends Err
 case class PurchaseAlreadyExists(purchase:Purchase) extends PurchaseError
 case object PurchaseNotFound extends PurchaseError
 case object PurchaseLotNotFound extends PurchaseError

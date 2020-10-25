@@ -12,7 +12,6 @@ case class Position(
                      positionName:String, // должность
                      positionRole:Role,
                      militaryUnit:String, // воинская часть
-                     positionId:Option[PositionId]=None,
-                   )
+                     positionId:Option[PositionId]=None)
 
 

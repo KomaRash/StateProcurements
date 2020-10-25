@@ -13,10 +13,8 @@ class PostgresUserRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
   override def checkPassword(usernamePasswordCredentials: UsernamePasswordCredentials): F[Option[User]] = {
     getByUCredentials(usernamePasswordCredentials).option.transact(tx)
   }
-
   override def maxThreadPool(): Int= 1
-  override def createPosition(position: Position): Unit = ???
-  override def addUser(userInfo: User): Unit = ???
+
 }
 object UserSQL{
   implicit val userReader:Read[User]=Read[(Int,Int,String,String,String,String,String,String,String,String,String)].map(u=>

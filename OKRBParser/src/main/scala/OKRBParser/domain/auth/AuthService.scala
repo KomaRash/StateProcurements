@@ -1,6 +1,8 @@
 package OKRBParser.domain.auth
 
 import OKRBParser.domain.position.{User, UserId, UserRepositoryAlgebra, UsernamePasswordCredentials}
+import cats.Monad
+import cats.data.EitherT
 import cats.effect.Sync
 import tsec.authentication.{BearerTokenAuthenticator, SecuredRequestHandler, TSecBearerToken}
 class AuthService[F[_]:Sync](userRepository:UserRepositoryAlgebra[F],
@@ -17,4 +19,6 @@ class AuthService[F[_]:Sync](userRepository:UserRepositoryAlgebra[F],
     userStore(userRepository),
     authSettings)
   def auth: SecuredRequestHandler[F, UserId, User, TSecBearerToken[UserId]] =SecuredRequestHandler(bearerTokenAuthenticator)
+
+
 }

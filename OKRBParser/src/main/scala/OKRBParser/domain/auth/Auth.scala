@@ -29,15 +29,15 @@ object Auth {
     TSecTokenSettings(
       expiryDuration = 8.hours,
       maxIdle = None)
-  def _allRoles[F[_],Auth]
+  private def _allRoles[F[_],Auth]
   (implicit F:MonadError[F,Throwable]):BasicRBAC[F,Role,User,Auth]= {
     BasicRBAC.all[F,Role,User,Auth]
   }
-  def _userOnly[F[_],Auth]
+  private def _userOnly[F[_],Auth]
   (implicit F:MonadError[F,Throwable]):BasicRBAC[F,Role,User,Auth]= {
     BasicRBAC[F, Role, User, Auth](Role.User)
   }
-  def _directorOnly[F[_],Auth]
+  private def _directorOnly[F[_],Auth]
   (implicit F:MonadError[F,Throwable]):BasicRBAC[F,Role,User,Auth]= {
     BasicRBAC[F, Role, User, Auth](Role.Director)
   }
@@ -51,6 +51,12 @@ object Auth {
                          (implicit F:MonadError[F,Throwable]): TSecAuthService[User, Auth, F]={
     TSecAuthService.withAuthorization(auth)(pf)
   }
-  def directorOnly[F[_],Auth](implicit F:MonadError[F,Throwable])=roleOnly[F,Auth](_directorOnly)(_)
-  def userOnly[F[_],Auth](implicit F:MonadError[F,Throwable])=roleOnly[F,Auth](_userOnly)(_)
+  def directorOnly[F[_],Auth](pf: PartialFunction[SecuredRequest[F, User,Auth], F[Response[F]]])
+                             (implicit F:MonadError[F,Throwable]):TSecAuthService[User, Auth, F] = {
+    roleOnly[F, Auth](_directorOnly)(pf)
+  }
+  def userOnly[F[_],Auth](pf: PartialFunction[SecuredRequest[F, User,Auth], F[Response[F]]])
+                         (implicit F:MonadError[F,Throwable]):TSecAuthService[User, Auth, F] = {
+    roleOnly[F, Auth](_userOnly)(pf)
+  }
 }
