@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {Purchase} from "../../models/Purchase";
+import {PurchaseListService} from "../../services/purchase.list.service";
 
 @Component({
   selector: 'app-expansion-purchase',
@@ -7,11 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ExpansionPurchaseComponent implements OnInit {
   panelOpenState = false;
-  constructor(){
+  purchases:Array<Purchase>
+  constructor(public purchaseListService:PurchaseListService){
 
   }
 
   ngOnInit(): void {
+    this.purchaseListService.getPurchaseList().subscribe(p=>
+      this.purchases=p)
   }
 
 }

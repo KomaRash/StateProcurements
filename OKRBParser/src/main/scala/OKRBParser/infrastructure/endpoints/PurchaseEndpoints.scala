@@ -9,7 +9,7 @@ import cats.implicits._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{EntityDecoder, HttpRoutes}
+import org.http4s.{EntityDecoder, Header, Headers, HttpRoutes}
 import org.joda.time.DateTime
 import tsec.authentication._
 
@@ -109,6 +109,8 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F],
 object PurchaseEndpoints{
   def endpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F],
                                              auth:AuthService[F]): HttpRoutes[F] ={
-    new PurchaseEndpoints[F](service,auth).endpoints
+    new PurchaseEndpoints[F](service,auth).endpoints.map(_.withHeaders(Headers.of(
+      Header("Access-Control-Allow-Origin", "http://localhost:4200"),
+      Header("Access-Control-Allow-Credentials","true"))))
   }
 }

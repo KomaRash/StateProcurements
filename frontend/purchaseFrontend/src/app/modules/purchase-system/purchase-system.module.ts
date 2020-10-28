@@ -9,26 +9,43 @@ import {BrowserModule} from "@angular/platform-browser";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AppModule} from "../../app.module";
 import {PurchaseHeaderComponent} from "../purchase-header/purchase-header.component";
+import {ExpansionPurchaseComponent} from "../expansion-purchase/expansion-purchase.component";
+import {MatExpansionModule} from "@angular/material/expansion";
+import {CreatePurchaseComponent} from "../create-purchase/create-purchase.component";
 
 
 export const routes: Routes = [
   {
     path: 'purchases',
     component: PurchaseSystemComponent,
-    canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService],
+    children: [
+      { path: '', component: ExpansionPurchaseComponent }
+    ]
+  },
+  {
+    path: 'create',
+    component: PurchaseSystemComponent,
+    canActivate: [AuthGuardService],
+    children: [
+      { path: '', component: CreatePurchaseComponent }
+    ]
   }
 ];
 
 @NgModule({
-  declarations: [
-    PurchaseSystemComponent,
-    PurchaseHeaderComponent],
+    declarations: [
+        PurchaseSystemComponent,
+        PurchaseHeaderComponent,
+        ExpansionPurchaseComponent
+    ],
   imports: [
     RouterModule.forRoot(routes),
     CommonModule,
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
+    MatExpansionModule,
   ]
 })
 export class PurchaseSystemModule { }

@@ -55,6 +55,7 @@ object TestApp extends IOApp {
     purchaseEndpoints=PurchaseEndpoints.endpoints(purchaseService,authService)
     authEndpoints=AuthEndpoints.endpoints(authService)
     endpoints=authEndpoints<+>purchaseEndpoints
+
     server <- BlazeServerBuilder[F]
       .bindHttp(8080,"127.0.0.1")
       .withHttpApp(endpoints.orNotFound)

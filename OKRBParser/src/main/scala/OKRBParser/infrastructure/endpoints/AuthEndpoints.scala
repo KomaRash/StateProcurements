@@ -32,7 +32,7 @@ class AuthEndpoints[F[_]:Sync:Monad](authService:AuthService[F])  extends Http4s
                 map {authService.bearerTokenAuthenticator.embed(
                   Response(Status.Ok,
                     headers=Headers.of(
-                      Header("Access-Control-Allow-Origin", "http://localhost:4201"),
+                      Header("Access-Control-Allow-Origin", "http://localhost:4200"),
                       Header("Access-Control-Allow-Credentials","true"))),_).
                   withEntity(user.position.asJson)
                 }

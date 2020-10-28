@@ -28,10 +28,13 @@ export class AuthService {
   }
   logout() {
     localStorage.removeItem('token');
-    localStorage.removeItem('role');
+    localStorage.removeItem('position');
     }
   isAuthenticated(){
     return ( localStorage.getItem('token') )? true : false;
 
   }
+  getToken():String{
+    console.log(localStorage.getItem('token'))
+    return localStorage.getItem('token')}
 }

@@ -6,9 +6,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import {MatExpansionModule} from '@angular/material/expansion';
 import {AuthModule} from "./modules/auth/auth.module";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { PurchaseHeaderComponent } from './modules/purchase-header/purchase-header.component';
 import {PurchaseSystemModule} from "./modules/purchase-system/purchase-system.module";
+import {AuthInterceptor} from "./services/auth.interceptor";
 
 @NgModule({
   declarations: [
@@ -23,7 +24,13 @@ import {PurchaseSystemModule} from "./modules/purchase-system/purchase-system.mo
     PurchaseSystemModule,
     AppRoutingModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
