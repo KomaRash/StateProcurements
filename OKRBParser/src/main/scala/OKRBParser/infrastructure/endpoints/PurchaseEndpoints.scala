@@ -33,6 +33,16 @@ class PurchaseEndpoints[F[_]:ConcurrentEffect:Monad](service:PurchaseService[F],
         case None =>NotFound()
       }
     }
+    case GET-> Root/"purchases"/id asAuthed user=>{
+      id.toIntOption.map(service.getPurchase(_))
+      match {
+        case Some(value) => value.value.flatMap {
+          case Left(value) => BadRequest()
+          case Right(value) =>Ok(value)
+        }
+        case None =>NotFound()
+      }
+    }
   }
   private def createPurchase:AuthEndpoint[F,Token]={
     case req@POST -> Root / "purchase" asAuthed user=>

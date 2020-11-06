@@ -7,20 +7,10 @@
               <h5 class="purchase">{{purchase.description}}</h5>
               <h5 class="purchaseStatus">Статус закупки:{{purchase.purchaseStatus}}</h5>
           </mat-expansion-panel-header>
-
           <ng-template matExpansionPanelContent>
               <p class="purchase">дата создания:{{purchase.purchaseInfo.dateOfPurchase}}</p>
               <p class="purchase">тип закупки - {{purchase.purchaseInfo.procedureName}}</p>
-              <br>
-                  <h4>лоты:</h4>
-                  <ul>
-                  <li>
-                      <h5>name</h5>
-                      <h5>okrb</h5>
-                      <h5>deadline</h5>
-                          <h5>153.215</h5>
-                  </li>
-            </ul>
+            <a href="purchases/{{purchase.purchaseId}}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Подробнее</a>
           </ng-template>
          </mat-expansion-panel>
   </div>

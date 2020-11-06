@@ -10,6 +10,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { PurchaseHeaderComponent } from './modules/purchase-header/purchase-header.component';
 import {PurchaseSystemModule} from "./modules/purchase-system/purchase-system.module";
 import {AuthInterceptor} from "./services/auth.interceptor";
+import {CommonModule} from "@angular/common";
 
 @NgModule({
   declarations: [

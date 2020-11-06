@@ -12,6 +12,13 @@ import {PurchaseHeaderComponent} from "../purchase-header/purchase-header.compon
 import {ExpansionPurchaseComponent} from "../expansion-purchase/expansion-purchase.component";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {CreatePurchaseComponent} from "../create-purchase/create-purchase.component";
+import {PurchaseComponent} from "../purchase/purchase-component/purchase.component";
+import {AppRoutingModule} from "../../app-routing.module";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {OkrbTableComponent} from "../okrb-table/okrb-table.component";
+import {MatTableModule} from "@angular/material/table";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatPaginatorModule} from "@angular/material/paginator";
 
 
 export const routes: Routes = [
@@ -20,7 +27,7 @@ export const routes: Routes = [
     component: PurchaseSystemComponent,
     canActivate: [AuthGuardService],
     children: [
-      { path: '', component: ExpansionPurchaseComponent }
+      { path: '', component: ExpansionPurchaseComponent },
     ]
   },
   {
@@ -30,6 +37,15 @@ export const routes: Routes = [
     children: [
       { path: '', component: CreatePurchaseComponent }
     ]
+  },
+  {
+    path: 'purchases/:id',
+    component: PurchaseSystemComponent,
+    canActivate: [AuthGuardService],
+    children: [
+      { path: '', component: PurchaseComponent }
+    ]
+
   }
 ];
 
@@ -37,15 +53,23 @@ export const routes: Routes = [
     declarations: [
         PurchaseSystemComponent,
         PurchaseHeaderComponent,
-        ExpansionPurchaseComponent
+        ExpansionPurchaseComponent,
+        PurchaseComponent,
     ],
   imports: [
     RouterModule.forRoot(routes),
     CommonModule,
     BrowserModule,
     FormsModule,
+    CommonModule,
+    AppRoutingModule,
+    BrowserModule,
+    BrowserAnimationsModule,
     ReactiveFormsModule,
     MatExpansionModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
   ]
 })
 export class PurchaseSystemModule { }

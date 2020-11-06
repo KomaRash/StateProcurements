@@ -44,22 +44,14 @@ class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
     }yield purchase
   }
   def getPurchaseList(userId: UserId)(implicit M:Monad[F]): F[List[Purchase]] = {
-    repository.getPurchaseList(userId).map(purchases => {
-      purchases.map { purchase =>
-        purchase.purchaseId.
-          map { id =>
-            repository.getPurchaseLots(id).
-              map(lots => purchase.copy(purchaseLots = lots))
-          }.sequence
-      }.sequence
-    }).flatten.map(_.flatten)
+    repository.getPurchaseList(userId)
 
   }
   def getPurchase(purchaseId: PurchaseId)(implicit M:Monad[F]): EitherT[F, PurchaseError, Option[Purchase]] ={
-    (for{
+    for{
       _<-validation.exist(purchaseId.some)
       purchase<-EitherT.liftF(repository.getPurchaseWithLots(purchaseId))
-    } yield purchase)
+    } yield purchase
   }
 }
 object PurchaseService{

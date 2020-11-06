@@ -1,0 +1,38 @@
+<div>
+<div class="example-container mat-elevation-z8">
+    <div class="example-loading-shade" *ngIf="isLoadingResults || isRateLimitReached">
+      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+      <div class="example-rate-limit-reached" *ngIf="isRateLimitReached">
+        GitHub's API rate limit has been reached. It will be reset in one minute.
+      </div>
+    </div>
+  <table mat-table [dataSource]="dataSource" class="example-table" matSort matSortActive="created"
+         matSortDisableClear matSortDirection="asc">
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
+    <ng-container matColumnDef="section">
+      <th mat-header-cell *matHeaderCellDef> Секция </th>
+      <td mat-cell *matCellDef="let okrbProduct"> {{okrbProduct.section}} </td>
+    </ng-container>
+    <ng-container matColumnDef="class">
+      <th mat-header-cell *matHeaderCellDef> Класс </th>
+      <td mat-cell *matCellDef="let okrbProduct"> {{okrbProduct.productClass}} </td>
+    </ng-container>
+    <ng-container matColumnDef="subCategories">
+      <th mat-header-cell *matHeaderCellDef> Подкатегория </th>
+      <td mat-cell *matCellDef="let okrbProduct"> {{okrbProduct.subCategories}} </td>
+    </ng-container>
+    <ng-container matColumnDef="groupings">
+      <th mat-header-cell *matHeaderCellDef> Группа </th>
+      <td mat-cell *matCellDef="let okrbProduct"> {{okrbProduct.grouping}} </td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Наименование </th>
+      <td mat-cell *matCellDef="let okrbProduct"> {{okrbProduct.name}} </td>
+    </ng-container>
+
+  </table>
+  <mat-paginator [length]="resultsLength" [pageSize]="pageSize">
+  </mat-paginator>
+</div>
+</div>
