@@ -9,9 +9,9 @@ package OKRBParser.domain.position
  * @param positionId
  */
 case class Position(
-                     positionName:String, // должность
-                     positionRole:Role,
-                     militaryUnit:String, // воинская часть
-                     positionId:Option[PositionId]=None)
+                     positionName: String, // должность
+                     positionRole: Role,
+                     militaryUnit: String, // воинская часть
+                     positionId: Option[PositionId] = None)
 
 

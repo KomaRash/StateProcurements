@@ -1,1 +1,2 @@
-Alter TABLE militaryposition add column Role varchar not null default 'User'
+Alter TABLE militaryposition
+    add column Role varchar not null default 'User'

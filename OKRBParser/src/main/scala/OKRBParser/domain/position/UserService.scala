@@ -1,10 +1,7 @@
 package OKRBParser.domain.position
 
-import cats.Monad
-import cats.data.EitherT
-
-class UserService[F[_]] (userRepository: UserRepositoryAlgebra[F],
-                         validation:UserValidationAlgebra[F]) {
+class UserService[F[_]](userRepository: UserRepositoryAlgebra[F],
+                        validation: UserValidationAlgebra[F]) {
   /*def createUser(user: User)(implicit M: Monad[F]): EitherT[F, UserError, User] ={
     for{
       _<-validation.doesNotExist(user)

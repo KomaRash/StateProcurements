@@ -6,9 +6,10 @@ import doobie.util.transactor.Transactor
 import doobie.util.update.Update
 import fs2.Chunk
 import doobie.implicits._
-class PostgresOKRBRepositoryInterpreter [F[_]:Sync](tx:Transactor[F],
-                                                    maxThreadPool:Int)
-  extends OKRBRepositoryAlgebra[F]{
+
+class PostgresOKRBRepositoryInterpreter[F[_] : Sync](tx: Transactor[F],
+                                                     maxThreadPool: Int)
+  extends OKRBRepositoryAlgebra[F] {
 
   override def getOKRBList: fs2.Stream[F, OKRBProduct] = {
     sql"""Select * from okrb"""
@@ -18,7 +19,7 @@ class PostgresOKRBRepositoryInterpreter [F[_]:Sync](tx:Transactor[F],
   }
 
   override def insertOKRBChunk(dataChunk: Chunk[OKRBProduct]): F[Int] = {
-    val sqlUpdate=
+    val sqlUpdate =
       """insert into okrb
         |(section, class, subcategories, groupings, name)
         |values (?,?,?,?,?)""".stripMargin

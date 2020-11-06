@@ -19,7 +19,7 @@ abstract class ParseInterpreter[F[_] : Sync : ConcurrentEffect](parseValid: Pars
   }
 
   def getStreamSheet(sheetName: String)
-                    (headerSize:Int)
+                    (headerSize: Int)
                     (document: Workbook): fs2.Stream[F, Row] = {
     for {
       _ <- parseValid.isSheetExist(sheetName)(document)

@@ -9,15 +9,14 @@ sealed case class Role(roleRepr: String)
 object Role extends SimpleAuthEnum[Role, String] {
 
   //val Administrator: Role = Role("Administrator")
-  val Unauthorized: Role      = Role("Unauthorized")
-  val User: Role      = Role("User")
-  val Director: Role  = Role("Director")
+  val Unauthorized: Role = Role("Unauthorized")
+  val User: Role = Role("User")
+  val Director: Role = Role("Director")
 
   implicit val E: Eq[Role] = Eq.fromUniversalEquals[Role]
+  protected val values: AuthGroup[Role] = AuthGroup(/*Administrator,*/ User, Director)
 
   def getRepr(t: Role): String = t.roleRepr
-
-  protected val values: AuthGroup[Role] = AuthGroup(/*Administrator,*/ User, Director)
 
 }
 

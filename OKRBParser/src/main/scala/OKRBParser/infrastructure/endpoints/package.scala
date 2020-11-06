@@ -14,15 +14,15 @@ import tsec.authentication.{SecuredRequest, TSecBearerToken}
 import scala.util.control.NonFatal
 
 package object endpoints {
-  type Token=TSecBearerToken[UserId]
+  type Token = TSecBearerToken[UserId]
   type AuthEndpoint[F[_], Auth] =
     PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]]
-  implicit val UsernamePasswordCredentialsCodec: Codec[UsernamePasswordCredentials] =deriveCodec
+  implicit val UsernamePasswordCredentialsCodec: Codec[UsernamePasswordCredentials] = deriveCodec
 
   val dateFormatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-  lazy implicit val OKRBProductEncoder:Encoder[OKRBProduct]=deriveEncoder[OKRBProduct]
-  lazy implicit val OKRBProductDecoder:Decoder[OKRBProduct]=deriveDecoder[OKRBProduct]
-  lazy implicit val DateEncoder:Encoder[DateTime]=(a:DateTime)=>a.toString(dateFormatter).asJson
+  lazy implicit val OKRBProductEncoder: Encoder[OKRBProduct] = deriveEncoder[OKRBProduct]
+  lazy implicit val OKRBProductDecoder: Decoder[OKRBProduct] = deriveDecoder[OKRBProduct]
+  lazy implicit val DateEncoder: Encoder[DateTime] = (a: DateTime) => a.toString(dateFormatter).asJson
   implicit val decodeDateTime: Decoder[DateTime] = Decoder.decodeString.emap { s =>
     try {
       Right(DateTime.parse(s, dateFormatter))
@@ -31,9 +31,9 @@ package object endpoints {
     }
   }
   lazy implicit val PurchaseLotCodec: Codec[PurchaseLot] = deriveCodec
-  lazy implicit val PurchaseCodec:Codec[Purchase]=deriveCodec
-  lazy implicit val PurchaseDecoder:Decoder[Purchase]=deriveDecoder
-  lazy implicit val PurchaseInfoCodec:Codec[PurchaseInfo]=deriveCodec
-  lazy implicit val PositionCodec:Codec[Position]=deriveCodec
-  lazy implicit val UserCodec:Codec[User]=deriveCodec
+  lazy implicit val PurchaseCodec: Codec[Purchase] = deriveCodec
+  lazy implicit val PurchaseDecoder: Decoder[Purchase] = deriveDecoder
+  lazy implicit val PurchaseInfoCodec: Codec[PurchaseInfo] = deriveCodec
+  lazy implicit val PositionCodec: Codec[Position] = deriveCodec
+  lazy implicit val UserCodec: Codec[User] = deriveCodec
 }

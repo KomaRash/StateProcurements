@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {OKRBProduct} from "../../models/OKRBProduct";
 import {OkrbService} from "../../services/okrb.service";
 import {MatTableDataSource} from "@angular/material/table";
@@ -12,27 +12,27 @@ import {catchError, delay, map, startWith, switchMap} from "rxjs/operators";
   templateUrl: './okrb-table.component.html',
   styleUrls: ['./okrb-table.component.css']
 })
-export class OkrbTableComponent implements AfterViewInit{
-  dataSource:MatTableDataSource<OKRBProduct>=new MatTableDataSource();
+export class OkrbTableComponent implements AfterViewInit {
+  dataSource: MatTableDataSource<OKRBProduct> = new MatTableDataSource();
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   resultsLength = 0;
-  pageSize=20;
+  pageSize = 20;
   isLoadingResults = false;
   isRateLimitReached = false;
-  columnsToDisplay: string[] = ['section', 'class', 'subCategories', 'groupings','name'];
+  columnsToDisplay: string[] = ['section', 'class', 'subCategories', 'groupings', 'name'];
 
-  constructor(public okrbService:OkrbService) {
+  constructor(public okrbService: OkrbService) {
 
   }
-  ngAfterViewInit(){
-    merge(this.sort.sortChange, this.paginator.page).
-      pipe(
-      startWith({}), delay(0),switchMap(() => {
+
+  ngAfterViewInit() {
+    merge(this.sort.sortChange, this.paginator.page).pipe(
+      startWith({}), delay(0), switchMap(() => {
         this.isLoadingResults = true;
         return this.okrbService.getOKRBList(
-           this.paginator.pageIndex,
-            this.pageSize
+          this.paginator.pageIndex,
+          this.pageSize
         )
       }),
       map(data => {

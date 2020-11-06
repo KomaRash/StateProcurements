@@ -9,54 +9,66 @@ import tsec.authorization.{Authorization, BasicRBAC}
 import tsec.common.SecureRandomId
 
 import scala.concurrent.duration._
+
 object Auth {
-  def userStore[F[_]](repository:UserRepositoryAlgebra[F]): IdentityStore[F, UserId, User] = (id: UserId) => {
+  def userStore[F[_]](repository: UserRepositoryAlgebra[F]): IdentityStore[F, UserId, User] = (id: UserId) => {
     OptionT(repository.getUser(id))
   }
-  def tokenStore[F[_]](repository:AuthRepositoryAlgebra[F]): BackingStore[F, SecureRandomId, TSecBearerToken[UserId]] =
-    new BackingStore[F,SecureRandomId,TSecBearerToken[UserId]] {
-      override def put(elem: TSecBearerToken[UserId]): F[TSecBearerToken[UserId]] ={
+
+  def tokenStore[F[_]](repository: AuthRepositoryAlgebra[F]): BackingStore[F, SecureRandomId, TSecBearerToken[UserId]] =
+    new BackingStore[F, SecureRandomId, TSecBearerToken[UserId]] {
+      override def put(elem: TSecBearerToken[UserId]): F[TSecBearerToken[UserId]] = {
         repository.put(elem)
       }
-      override def update(v: TSecBearerToken[UserId]): F[TSecBearerToken[UserId]] ={
+
+      override def update(v: TSecBearerToken[UserId]): F[TSecBearerToken[UserId]] = {
         repository.update(v)
       }
+
       override def delete(id: SecureRandomId): F[Unit] = repository.delete(id)
 
       override def get(id: SecureRandomId): OptionT[F, TSecBearerToken[UserId]] = OptionT(repository.get(id))
     }
+
   def authSettings: TSecTokenSettings =
     TSecTokenSettings(
       expiryDuration = 8.hours,
       maxIdle = None)
-  private def _allRoles[F[_],Auth]
-  (implicit F:MonadError[F,Throwable]):BasicRBAC[F,Role,User,Auth]= {
-    BasicRBAC.all[F,Role,User,Auth]
-  }
-  private def _userOnly[F[_],Auth]
-  (implicit F:MonadError[F,Throwable]):BasicRBAC[F,Role,User,Auth]= {
-    BasicRBAC[F, Role, User, Auth](Role.User)
-  }
-  private def _directorOnly[F[_],Auth]
-  (implicit F:MonadError[F,Throwable]):BasicRBAC[F,Role,User,Auth]= {
-    BasicRBAC[F, Role, User, Auth](Role.Director)
-  }
-  def allRoles[F[_],Auth](pf: PartialFunction[SecuredRequest[F, User,Auth ], F[Response[F]]])
+
+  def allRoles[F[_], Auth](pf: PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]])
                           (onNotAuthorized: TSecAuthService[User, Auth, F])
-                          (implicit F:MonadError[F,Throwable]): TSecAuthService[User, Auth, F] = {
-    TSecAuthService.withAuthorizationHandler[User,Auth,F](_allRoles)(pf,onNotAuthorized.run)
+                          (implicit F: MonadError[F, Throwable]): TSecAuthService[User, Auth, F] = {
+    TSecAuthService.withAuthorizationHandler[User, Auth, F](_allRoles)(pf, onNotAuthorized.run)
   }
-  def roleOnly[F[_],Auth](auth:Authorization[F, User, Auth])
-                         (pf: PartialFunction[SecuredRequest[F, User,Auth], F[Response[F]]])
-                         (implicit F:MonadError[F,Throwable]): TSecAuthService[User, Auth, F]={
-    TSecAuthService.withAuthorization(auth)(pf)
+
+  private def _allRoles[F[_], Auth]
+  (implicit F: MonadError[F, Throwable]): BasicRBAC[F, Role, User, Auth] = {
+    BasicRBAC.all[F, Role, User, Auth]
   }
-  def directorOnly[F[_],Auth](pf: PartialFunction[SecuredRequest[F, User,Auth], F[Response[F]]])
-                             (implicit F:MonadError[F,Throwable]):TSecAuthService[User, Auth, F] = {
+
+  def directorOnly[F[_], Auth](pf: PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]])
+                              (implicit F: MonadError[F, Throwable]): TSecAuthService[User, Auth, F] = {
     roleOnly[F, Auth](_directorOnly)(pf)
   }
-  def userOnly[F[_],Auth](pf: PartialFunction[SecuredRequest[F, User,Auth], F[Response[F]]])
-                         (implicit F:MonadError[F,Throwable]):TSecAuthService[User, Auth, F] = {
+
+  private def _directorOnly[F[_], Auth]
+  (implicit F: MonadError[F, Throwable]): BasicRBAC[F, Role, User, Auth] = {
+    BasicRBAC[F, Role, User, Auth](Role.Director)
+  }
+
+  def roleOnly[F[_], Auth](auth: Authorization[F, User, Auth])
+                          (pf: PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]])
+                          (implicit F: MonadError[F, Throwable]): TSecAuthService[User, Auth, F] = {
+    TSecAuthService.withAuthorization(auth)(pf)
+  }
+
+  def userOnly[F[_], Auth](pf: PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]])
+                          (implicit F: MonadError[F, Throwable]): TSecAuthService[User, Auth, F] = {
     roleOnly[F, Auth](_userOnly)(pf)
+  }
+
+  private def _userOnly[F[_], Auth]
+  (implicit F: MonadError[F, Throwable]): BasicRBAC[F, Role, User, Auth] = {
+    BasicRBAC[F, Role, User, Auth](Role.User)
   }
 }

@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PurchaseSystemComponent } from './purchase-system.component';
-import {Route, Router, RouterModule, Routes} from "@angular/router";
-import {LoginComponent} from "../auth/login/login.component";
-import {LoginGuardService} from "../../guards/login-guard.service";
+import { RouterModule, Routes} from "@angular/router";
 import {AuthGuardService} from "../../guards/auth-guard.service";
 import {BrowserModule} from "@angular/platform-browser";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {AppModule} from "../../app.module";
 import {PurchaseHeaderComponent} from "../purchase-header/purchase-header.component";
 import {ExpansionPurchaseComponent} from "../expansion-purchase/expansion-purchase.component";
 import {MatExpansionModule} from "@angular/material/expansion";
@@ -19,6 +16,7 @@ import {OkrbTableComponent} from "../okrb-table/okrb-table.component";
 import {MatTableModule} from "@angular/material/table";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatPaginatorModule} from "@angular/material/paginator";
+import {MatSortModule} from "@angular/material/sort";
 
 
 export const routes: Routes = [
@@ -51,6 +49,8 @@ export const routes: Routes = [
 
 @NgModule({
     declarations: [
+      CreatePurchaseComponent,
+      OkrbTableComponent,
         PurchaseSystemComponent,
         PurchaseHeaderComponent,
         ExpansionPurchaseComponent,
@@ -70,6 +70,7 @@ export const routes: Routes = [
     MatTableModule,
     MatProgressSpinnerModule,
     MatPaginatorModule,
+    MatSortModule,
   ]
 })
 export class PurchaseSystemModule { }

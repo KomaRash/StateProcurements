@@ -17,7 +17,7 @@ trait PurchaseRepositoryAlgebra[F[_]] extends RepositoryAlgebra[F] {
 
   def getPurchase(description: String): F[Option[Purchase]]
 
-  def createPurchase(purchase: Purchase,userId: Option[PositionId]): F[Option[Purchase]]
+  def createPurchase(purchase: Purchase, userId: Option[PositionId]): F[Option[Purchase]]
 
   def addLots(purchaseId: Int, purchaseLot: List[PurchaseLot]): F[Option[Purchase]]
 

@@ -2,30 +2,59 @@
   <div>Создать закупку</div>
   <div class="create-form">
     <div class="form-row">
-    <div class="form-group col-md-8">
-      <label for="purchaseDescription">Описание Государственной закупки</label>
-      <input type="text" class="form-control" id="purchaseDescription" >
-      <small  class="form-text text-muted">описание должно кратко описывать госзакупку</small>
-    </div>
-    <div class="form-group col-md-4">
-      <label for="purchaseOperation">Операция госзакупки</label>
-      <input type="text" class="form-control" id="purchaseOperation"  list="purchaseOp">
-      <datalist id="purchaseOp">
-        <option value="Аукцион">
-        <option value="Целевая">
-      </datalist>
-      <small  class="form-text text-muted">выберите операцию из списка или введите название операции</small>
-    </div>
+      <div class="form-group col-md-8">
+        <label for="purchaseDescription">Описание Государственной закупки</label>
+        <input type="text" class="form-control" id="purchaseDescription">
+        <small class="form-text text-muted">описание должно кратко описывать госзакупку</small>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="purchaseOperation">Операция госзакупки</label>
+        <input type="text" class="form-control" id="purchaseOperation" list="purchaseOp">
+        <datalist id="purchaseOp">
+          <option value="Аукцион">
+          <option value="Целевая">
+        </datalist>
+        <small class="form-text text-muted">выберите операцию из списка или введите название операции</small>
+      </div>
     </div>
     <div class="form-row">
       <div class="form-group col-md-3">
         <label for="purchaseDateCreate">Дата оформления госзакупки</label>
-        <input type="date" class="form-control" id="purchaseDateCreate" >
-        <small  class="form-text text-muted">Дата оформления госзакупок на торговых площадках</small>
+        <input type="date" class="form-control" id="purchaseDateCreate">
+        <small class="form-text text-muted">Дата оформления госзакупок на торговых площадках</small>
       </div>
     </div>
   </div>
-<app-okrb-table></app-okrb-table>
+  <table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+      <th>Код по ОКРБ</th>
+      <th>Наименование</th>
+      <th>Описание</th>
+      <th>Стоимость</th>
+      <th>Дата окончания лота</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngIf="purchaseLots.length == 0">
+      <td colspan="6" class="text-center">
+        <div>
+          <p>Не добвлено ни одного лота к закупке</p>
+          <a  class="btn btn-primary btn-sl active " role="button" aria-pressed="true">Добавить лот</a>
+        </div>
+      </td>
+    </tr>
+    <tr *ngFor="let purchaseLot of purchaseLots; let i = index">
+      <td>{{purchaseService.getOKRB(purchaseLot.okrb)}}</td>
+      <td>{{purchaseLot.okrb.name}}</td>
+      <td>{{purchaseLot.name}}</td>
+      <td>{{purchaseLot.amount}}</td>
+      <td>{{purchaseLot.deadline}}</td>
+
+    </tr>
+    </tbody>
+  </table>
 
 </div>
 
