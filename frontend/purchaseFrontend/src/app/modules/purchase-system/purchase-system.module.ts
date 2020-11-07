@@ -17,6 +17,8 @@ import {MatTableModule} from "@angular/material/table";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatSortModule} from "@angular/material/sort";
+import {MatInputModule} from "@angular/material/input";
+import {MatFormFieldModule} from "@angular/material/form-field";
 
 
 export const routes: Routes = [
@@ -71,6 +73,7 @@ export const routes: Routes = [
     MatProgressSpinnerModule,
     MatPaginatorModule,
     MatSortModule,
-  ]
+  ],
+  exports: [MatFormFieldModule, MatInputModule, OkrbTableComponent]
 })
 export class PurchaseSystemModule { }

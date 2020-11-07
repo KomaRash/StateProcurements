@@ -11,10 +11,10 @@ class PostgresOKRBRepositoryInterpreter[F[_] : Sync](tx: Transactor[F],
                                                      maxThreadPool: Int)
   extends OKRBRepositoryAlgebra[F] {
 
-  override def getOKRBList: fs2.Stream[F, OKRBProduct] = {
-    sql"""Select * from okrb"""
+  override def getOKRBList(): F[List[OKRBProduct]] = {
+    sql"""Select section,class,subcategories,groupings,name,productid from okrb"""
       .query[OKRBProduct]
-      .stream
+      .to[List]
       .transact(tx)
   }
 

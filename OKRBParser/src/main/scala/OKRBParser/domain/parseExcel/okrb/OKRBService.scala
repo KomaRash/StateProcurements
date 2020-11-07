@@ -1,10 +1,16 @@
 package OKRBParser.domain.parseExcel.okrb
 
+import cats.data.EitherT
 import cats.effect.Concurrent
+import org.http4s.Response
 import org.http4s.multipart.Part
 
-class OKRBParseService[F[_] : Concurrent](okrbRepository: OKRBRepositoryAlgebra[F],
-                                          okrbParse: OKRBParseAlgebra[F]) {
+class OKRBService[F[_] : Concurrent](repository: OKRBRepositoryAlgebra[F],
+                                     okrbParse: OKRBParseAlgebra[F]) {
+  def getOKRB(): F[List[OKRBProduct]]= {
+    repository.getOKRBList
+  }
+
   def insertOKRB(okrbDocument: Part[F]): fs2.Stream[F, Int] = {
     val okrbProducts = for {
       document <- okrbParse.giveDocument(okrbDocument)
@@ -13,6 +19,6 @@ class OKRBParseService[F[_] : Concurrent](okrbRepository: OKRBRepositoryAlgebra[
     } yield okrbProduct
     okrbProducts // привязать к конфиг файлу
       .chunkN(100) // аналогично
-      .parEvalMap(okrbRepository.maxThreadPool())(okrbRepository.insertOKRBChunk)
+      .parEvalMap(repository.maxThreadPool())(repository.insertOKRBChunk)
   }
 }

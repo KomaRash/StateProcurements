@@ -9,13 +9,21 @@ import {AuthModule} from "./modules/auth/auth.module";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {PurchaseSystemModule} from "./modules/purchase-system/purchase-system.module";
 import {AuthInterceptor} from "./services/auth.interceptor";
+import { CreateLotComponent } from './modules/create-purchase/create-lot/create-lot.component';
+import {FormsModule} from "@angular/forms";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from "@angular/material/button";
+import {MatInputModule} from "@angular/material/input";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CreateLotComponent
   ],
   imports: [
 
+    MatInputModule,
     HttpClientModule,
     BrowserModule,
     BrowserAnimationsModule,
@@ -23,8 +31,13 @@ import {AuthInterceptor} from "./services/auth.interceptor";
     AuthModule,
     PurchaseSystemModule,
     AppRoutingModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatDialogModule,
+    MatButtonModule,
   ],
   providers: [
+  {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}},
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

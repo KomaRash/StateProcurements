@@ -10,10 +10,10 @@ class MySqlOKRBRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
                                                 maxThreadPool:Int)
   extends OKRBRepositoryAlgebra[F]{
 
-  override def getOKRBList: fs2.Stream[F, OKRBProduct] = {
+  override def getOKRBList(): F[List[OKRBProduct]] = {
     sql"""Select * from okrb"""
       .query[OKRBProduct]
-      .stream
+      .to[List]
       .transact(tx)
   }
 

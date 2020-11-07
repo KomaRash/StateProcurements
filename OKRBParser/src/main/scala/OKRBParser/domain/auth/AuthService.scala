@@ -6,13 +6,15 @@ import tsec.authentication.{BearerTokenAuthenticator, SecuredRequestHandler, TSe
 
 class AuthService[F[_] : Sync](userRepository: UserRepositoryAlgebra[F],
                                authRepository: AuthRepositoryAlgebra[F]) {
+
+  import Auth._
+
   val bearerTokenAuthenticator: BearerTokenAuthenticator[F, UserId, User] =
     BearerTokenAuthenticator[F, UserId, User](
       tokenStore(authRepository),
       userStore(userRepository),
       authSettings)
 
-  import Auth._
 
   def checkPassword(user: UsernamePasswordCredentials): F[Option[User]] = {
 

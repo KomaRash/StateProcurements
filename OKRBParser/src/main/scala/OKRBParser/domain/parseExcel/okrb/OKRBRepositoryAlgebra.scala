@@ -6,7 +6,7 @@ import fs2.{Chunk, Stream}
 trait OKRBRepositoryAlgebra[F[_]] extends RepositoryAlgebra[F] {
   def insertOKRBChunk(dataChunk: Chunk[OKRBProduct]): F[Int]
 
-  def getOKRBList: Stream[F, OKRBProduct]
+  def getOKRBList():F[List[OKRBProduct]]
 
   def clearOKRBList(): F[Int]
 }
