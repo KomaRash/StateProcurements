@@ -3,8 +3,7 @@ package OKRBParser.infrastructure.endpoints
 import OKRBParser.ParseError
 import OKRBParser.domain.auth.AuthService
 import OKRBParser.domain.parseExcel.okrb.{OKRBProduct, OKRBService}
-import OKRBParser.domain.purchase.PurchaseService
-import scala.concurrent.duration._
+import OKRBParser.infrastructure.endpoints.Pagination.{OptionalPageMatcher, OptionalPageSizeMatcher, OptionalSearchMatcher}
 import cats.Monad
 import cats.effect.ConcurrentEffect
 import cats.implicits._
@@ -13,8 +12,8 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe.jsonOf
 import org.http4s.dsl.Http4sDsl
 import org.http4s.multipart.Part
-import org.http4s.server.middleware.{CORS, CORSConfig}
 import org.http4s.{EntityDecoder, Header, Headers, HttpRoutes, ApiVersion => _}
+
 class OKRBEndpoints[F[_] : ConcurrentEffect : Monad](service: OKRBService[F]) extends Http4sDsl[F] {
   lazy implicit val okrbListEncoder: EntityDecoder[F, List[OKRBProduct]] = jsonOf[F, List[OKRBProduct]]
 
@@ -33,23 +32,23 @@ class OKRBEndpoints[F[_] : ConcurrentEffect : Monad](service: OKRBService[F]) ex
     }
 
   private def getOkrbList: HttpRoutes[F] = HttpRoutes.of[F] {
-    case GET -> Root / "okrb" => service.getOKRB().flatMap(list => Ok(list))
-
+    case GET -> Root / "okrb" :? OptionalPageMatcher(page):?
+      OptionalPageSizeMatcher(pageSize) :?
+      OptionalSearchMatcher(searchField) =>
+      service.getOKRB(page.getOrElse(0),pageSize.getOrElse(5),searchField.getOrElse("")).flatMap(list => Ok(list))
+    case GET -> Root/"okrb"/"length":?OptionalSearchMatcher(search)=>
+      service.getLength(search.getOrElse("")).flatMap(len => Ok(len))
   }
 
   def filterFileTypes(part: Part[F]): Boolean =
     part.headers.toList.exists(_.value.contains(s".xls"))
 
-  private val methodConfig = CORSConfig(
-    anyOrigin = true,
-    anyMethod = false,
-    allowedMethods = Some(Set("GET", "POST")),
-    allowCredentials = true,
-    maxAge = 1.day.toSeconds)
-  def endpoints(): HttpRoutes[F] = CORS(okrbParseEndpoint<+>getOkrbList,methodConfig)
+
+  def endpoints(): HttpRoutes[F] = okrbParseEndpoint <+> getOkrbList
 
 }
-object OKRBEndpoints{
+
+object OKRBEndpoints {
   def endpoints[F[_] : ConcurrentEffect : Monad](service: OKRBService[F],
                                                  auth: AuthService[F]): HttpRoutes[F] = {
     new OKRBEndpoints[F](service).endpoints().map(_.withHeaders(Headers.of(

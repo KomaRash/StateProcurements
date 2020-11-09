@@ -48,3 +48,11 @@
 .mat-column-created {
   max-width: 124px;
 }
+.element-row:not(.selected):hover {
+  background: #f5f5f5;
+}
+
+.element-row.selected {
+  background: #22a797;
+
+}

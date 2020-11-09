@@ -23,8 +23,8 @@
   </p>
 
 </div>
-<app-okrb-table></app-okrb-table>
+<app-okrb-table (onChanged)="onChanged($event)"></app-okrb-table>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">No Thanks</button>
-  <button mat-button [mat-dialog-close]="data.amount" cdkFocusInitial>Ok</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
 </div>

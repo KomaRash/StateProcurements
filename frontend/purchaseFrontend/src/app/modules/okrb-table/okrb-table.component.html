@@ -9,7 +9,10 @@
     <table [dataSource]="dataSource" class="example-table" mat-table matSort matSortActive="created"
            matSortDirection="asc" matSortDisableClear>
       <tr *matHeaderRowDef="columnsToDisplay" mat-header-row></tr>
-      <tr *matRowDef="let myRowData; columns: columnsToDisplay" mat-row></tr>
+      <tr *matRowDef="let myRowData; columns: columnsToDisplay" mat-row
+          class="element-row"
+          [class.selected]="expandedElement == myRowData"
+          (click)="setOKRB( myRowData)"></tr>
       <ng-container matColumnDef="section">
         <th *matHeaderCellDef mat-header-cell> Секция</th>
         <td *matCellDef="let okrbProduct" mat-cell> {{okrbProduct.section}} </td>

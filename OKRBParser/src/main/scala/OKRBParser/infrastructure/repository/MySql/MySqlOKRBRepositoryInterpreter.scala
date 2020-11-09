@@ -10,7 +10,7 @@ class MySqlOKRBRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
                                                 maxThreadPool:Int)
   extends OKRBRepositoryAlgebra[F]{
 
-  override def getOKRBList(): F[List[OKRBProduct]] = {
+  def getOKRBList(): F[List[OKRBProduct]] = {
     sql"""Select * from okrb"""
       .query[OKRBProduct]
       .to[List]
@@ -32,4 +32,12 @@ class MySqlOKRBRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
   }
 
   override def maxThreadPool(): Int = maxThreadPool
+
+  override def getOKRBList(pageSize: Int, page: Int, searchField: String): F[List[OKRBProduct]] = ???
+
+  override def getLength(str: String): F[Option[Int]] = ???
+}
+
+object MySqlOKRBRepositoryInterpreter {
+
 }

@@ -7,8 +7,12 @@ import org.http4s.multipart.Part
 
 class OKRBService[F[_] : Concurrent](repository: OKRBRepositoryAlgebra[F],
                                      okrbParse: OKRBParseAlgebra[F]) {
-  def getOKRB(): F[List[OKRBProduct]]= {
-    repository.getOKRBList
+  def getLength(str: String):F[Option[Int]] ={
+    repository.getLength(str)
+  }
+
+  def getOKRB(pageSize:Int,page:Int,searchField:String): F[List[OKRBProduct]]= {
+    repository.getOKRBList(pageSize,page,searchField)
   }
 
   def insertOKRB(okrbDocument: Part[F]): fs2.Stream[F, Int] = {

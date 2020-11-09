@@ -10,7 +10,12 @@ import {OKRBProduct} from "../models/OKRBProduct";
 export class OkrbService {
 
   constructor(public http:HttpClient) { }
-
+  getLength(searchField:string): Observable<number> {
+    const href = appConfig.url+'okrb';
+    const requestUrl =
+      `${href}/length?searchField=${searchField}`;
+    return this.http.get<number>(requestUrl) ;
+  }
   getOKRBList(pageIndex: number,size:number): Observable<Array<OKRBProduct>> {
     const href = appConfig.url+'okrb';
     const requestUrl =
