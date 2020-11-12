@@ -16,7 +16,7 @@ export class OkrbService {
       `${href}/length?searchField=${searchField}`;
     return this.http.get<number>(requestUrl) ;
   }
-  getOKRBList(pageIndex: number,size:number): Observable<Array<OKRBProduct>> {
+  getOKRBList(pageIndex: number,size:number,field:string): Observable<Array<OKRBProduct>> {
     const href = appConfig.url+'okrb';
     const requestUrl =
       `${href}?page=${pageIndex}&pageSize=${size}`;

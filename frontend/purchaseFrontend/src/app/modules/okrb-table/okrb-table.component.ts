@@ -1,10 +1,10 @@
-import {AfterViewInit, Component, Input, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, Output, ViewChild} from '@angular/core';
 import {OKRBProduct} from "../../models/OKRBProduct";
 import {OkrbService} from "../../services/okrb.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatSort} from "@angular/material/sort";
 import {MatPaginator} from "@angular/material/paginator";
-import {merge, of} from "rxjs";
+import {fromEvent, merge, Observable, of} from "rxjs";
 import {catchError, delay, map, startWith, switchMap} from "rxjs/operators";
 import { EventEmitter } from '@angular/core';
 
@@ -21,9 +21,10 @@ export class OkrbTableComponent implements AfterViewInit {
   isRateLimitReached = false;
   columnsToDisplay: string[] = ['section', 'class', 'subCategories', 'groupings', 'name'];
   expandedElement: OKRBProduct;
-
+  searchField:string="";
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
   @Output() onChanged ;
 
   setOKRB(increased:OKRBProduct) {
@@ -35,6 +36,7 @@ export class OkrbTableComponent implements AfterViewInit {
 
   constructor(public okrbService: OkrbService) {
   this.onChanged= new EventEmitter<OKRBProduct>();
+
   }
 
   ngAfterViewInit() {
@@ -43,7 +45,7 @@ export class OkrbTableComponent implements AfterViewInit {
         this.isLoadingResults = true;
         return this.okrbService.getOKRBList(
           this.paginator.pageIndex,
-          this.pageSize
+          this.pageSize,this.searchField
         )
       }),
       map(data => {
@@ -59,7 +61,7 @@ export class OkrbTableComponent implements AfterViewInit {
         return of([]);
       }),
       map(data=> {
-        this.okrbService.getLength("").
+        this.okrbService.getLength(this.searchField).
         subscribe(x=>{this.resultsLength=x})
         return data
       })

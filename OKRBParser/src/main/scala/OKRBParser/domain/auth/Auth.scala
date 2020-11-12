@@ -35,12 +35,15 @@ object Auth {
       expiryDuration = 8.hours,
       maxIdle = None)
 
-  def allRoles[F[_], Auth](pf: PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]])
+  def allRolesHandler[F[_], Auth](pf: PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]])
                           (onNotAuthorized: TSecAuthService[User, Auth, F])
                           (implicit F: MonadError[F, Throwable]): TSecAuthService[User, Auth, F] = {
     TSecAuthService.withAuthorizationHandler[User, Auth, F](_allRoles)(pf, onNotAuthorized.run)
   }
-
+  def allRoles[F[_], Auth](pf: PartialFunction[SecuredRequest[F, User, Auth], F[Response[F]]])
+                          (implicit F: MonadError[F, Throwable]): TSecAuthService[User, Auth, F] = {
+    TSecAuthService.withAuthorization[User, Auth, F](_allRoles)(pf)
+  }
   private def _allRoles[F[_], Auth]
   (implicit F: MonadError[F, Throwable]): BasicRBAC[F, Role, User, Auth] = {
     BasicRBAC.all[F, Role, User, Auth]

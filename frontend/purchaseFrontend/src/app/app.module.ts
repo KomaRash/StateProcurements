@@ -15,11 +15,13 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule} from "@angular/material/dialog";
 import {MatButtonModule} from "@angular/material/button";
 import {MatInputModule} from "@angular/material/input";
+import {PurchaseService} from "./services/purchase.service";
+import {PurchaseServiceModule} from "./modules/purchase-service/purchase-service.module";
 
 @NgModule({
   declarations: [
     AppComponent,
-    CreateLotComponent
+    CreateLotComponent,
   ],
   imports: [
 
@@ -29,12 +31,13 @@ import {MatInputModule} from "@angular/material/input";
     BrowserAnimationsModule,
     MatExpansionModule,
     AuthModule,
-    PurchaseSystemModule,
+  // PurchaseSystemModule,
     AppRoutingModule,
     FormsModule,
     MatFormFieldModule,
     MatDialogModule,
     MatButtonModule,
+    PurchaseServiceModule
   ],
   providers: [
   {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}},

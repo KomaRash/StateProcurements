@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {AuthService} from "../../../services/auth.service";
 
@@ -10,31 +10,29 @@ import {AuthService} from "../../../services/auth.service";
 })
 export class LoginComponent implements OnInit {
 
-    loginForm: FormGroup;
+  loginForm: FormGroup;
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private auth:AuthService,
-
-  ) {}
+    private auth: AuthService,
+  ) {
+  }
 
 
   ngOnInit(): void {
 
     this.loginForm = this.fb.group({
-      'username': new FormControl(null, []),
-      'password': new FormControl(null, []),
+      'username': new FormControl(null, [Validators.required]),
+      'password': new FormControl(null, [Validators.required]),
     });
 
   }
 
   login(data) {
-    this.auth.login( data.password,data.username)
-    this.router.navigate(['/purchases']);
+    this.auth.login(data.password, data.username).subscribe(() =>
+      this.router.navigate(['/purchases']))
     return true;
-
-
   }
 
 }

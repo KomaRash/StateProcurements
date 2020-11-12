@@ -24,17 +24,17 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
   implicit val okrbProductDecoder = jsonOf[F, OKRBProduct]
   implicit val PurchaseLotsDecoder = jsonOf[F, PurchaseLot]
   implicit val DateTimeDecoder = jsonOf[F, DateTime]
-  implicit val lotsEncoder = jsonOf[F, List[PurchaseLot]]
+  implicit val lotsDecoder = jsonOf[F, List[PurchaseLot]]
 
   private def getPurchase: AuthEndpoint[F, Token] = {
-    case GET -> Root / "purchases" asAuthed user => {
+    case GET -> Root  asAuthed user => {
       val purchaseList = user.userID.map(service.getPurchaseList(_))
       purchaseList match {
         case Some(value) => Ok(value)
         case None => NotFound()
       }
     }
-    case GET -> Root / "purchases" / id asAuthed user => {
+    case GET -> Root /  id asAuthed user => {
       id.toIntOption.map(service.getPurchase(_))
       match {
         case Some(value) => value.value.flatMap {
@@ -47,7 +47,7 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
   }
 
   private def createPurchase: AuthEndpoint[F, Token] = {
-    case req@POST -> Root / "purchase" asAuthed user =>
+    case req@POST -> Root  asAuthed user =>
       (for {
         purchase <- req.request.as[Purchase]
         p <- service.createPurchase(purchase, user.position.positionId).value
@@ -55,7 +55,7 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
         case Left(PurchaseAlreadyExists(purchase)) => Conflict()
         case Right(value) => Ok(value)
       }
-    case req@POST -> Root / "purchase" / id / "lots" asAuthed user =>
+    case req@POST -> Root  / id / "lots" asAuthed user =>
       (for {
         lots <- req.request.as[List[PurchaseLot]]
         p <- service.addLots(Try(id.toInt).toOption, lots, user).value
@@ -64,7 +64,14 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
         case Left(PurchaseAlreadyExecution) => Conflict()
         case Left(PurchaseNotFound) => NotFound()
       }
-    case req@PUT -> Root / "purchase" / id / "lots" asAuthed user =>
+    case req@POST -> Root  asAuthed user => (for {
+      purchase <- req.request.as[Purchase]
+      p <- service.createPurchase(purchase, user.position.positionId).value
+    } yield p).flatMap {
+      case Left(PurchaseAlreadyExists(purchase)) => Conflict(purchase)
+      case Right(value) => Ok(value)
+    }
+    case req@PUT -> Root  / id / "lots" asAuthed user =>
       (for {
         lot <- req.request.as[PurchaseLot]
         p <- service.updateLotUser(Try(id.toInt).toOption, lot, user).value
@@ -75,7 +82,7 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
         case Left(PurchaseLotNotFound) => NotFound()
         case Left(NotCorrectDataPurchase) => UnprocessableEntity()
       }
-    case req@GET -> Root / "purchase" asAuthed user =>
+    case req@GET -> Root  asAuthed user =>
       val purchase = for {
         purchase <- req.request.as[Purchase]
         p <- service.confirmCreatePurchase(purchase, user).value
@@ -89,7 +96,7 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
   }
 
   private def updatePurchase: AuthEndpoint[F, Token] = {
-    case req@PUT -> Root / "purchase" / id / "lots" asAuthed user =>
+    case req@PUT -> Root  / id / "lots" asAuthed user =>
       (for {
         lot <- req.request.as[PurchaseLot]
         p <- service.updateLotAdmin(Try(id.toInt).toOption, lot, user).value
@@ -124,8 +131,6 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
 object PurchaseEndpoints {
   def endpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseService[F],
                                                  auth: AuthService[F]): HttpRoutes[F] = {
-    new PurchaseEndpoints[F](service, auth).endpoints.map(_.withHeaders(Headers.of(
-      Header("Access-Control-Allow-Origin", "http://localhost:4200"),
-      Header("Access-Control-Allow-Credentials", "true"))))
+    new PurchaseEndpoints[F](service, auth).endpoints
   }
 }

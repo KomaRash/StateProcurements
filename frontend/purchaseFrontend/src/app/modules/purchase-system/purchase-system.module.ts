@@ -22,14 +22,14 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 
 
 export const routes: Routes = [
-  {
+  /*{
     path: 'purchases',
     component: PurchaseSystemComponent,
     canActivate: [AuthGuardService],
     children: [
       { path: '', component: ExpansionPurchaseComponent },
     ]
-  },
+  }*/,
   {
     path: 'create',
     component: PurchaseSystemComponent,
@@ -55,7 +55,7 @@ export const routes: Routes = [
       OkrbTableComponent,
         PurchaseSystemComponent,
         PurchaseHeaderComponent,
-        ExpansionPurchaseComponent,
+     /*   ExpansionPurchaseComponent,*/
         PurchaseComponent,
     ],
   imports: [
@@ -74,6 +74,6 @@ export const routes: Routes = [
     MatPaginatorModule,
     MatSortModule,
   ],
-  exports: [MatFormFieldModule, MatInputModule, OkrbTableComponent]
+  exports: [MatFormFieldModule, MatInputModule, OkrbTableComponent, PurchaseHeaderComponent]
 })
 export class PurchaseSystemModule { }

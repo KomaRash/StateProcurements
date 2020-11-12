@@ -1,6 +1,6 @@
 package OKRBParser.domain.purchase
 
-import OKRBParser.domain.purchase.PurchaseStatus.{CreatedPurchase, InProcess}
+import OKRBParser.domain.purchase.PurchaseStatus.CreatedPurchase
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
@@ -59,7 +59,7 @@ class PurchaseValidationInterpreter[F[_] : Monad](repository: PurchaseRepository
       case Some(id) =>
         EitherT.fromOptionF(repository.getStatus(id), PurchaseNotFound).
           ensure(PurchaseAlreadyExecution) {
-            status => status == InProcess
+            status => status == CreatedPurchase
           }.as()
       case None => EitherT.fromEither(NotCorrectDataPurchase.asLeft)
     }

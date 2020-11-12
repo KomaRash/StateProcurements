@@ -19,7 +19,7 @@ class OKRBEndpoints[F[_] : ConcurrentEffect : Monad](service: OKRBService[F]) ex
 
   private def okrbParseEndpoint: HttpRoutes[F] =
     HttpRoutes.of[F] {
-      case req@POST -> Root / "okrb" => req.decodeWith(multipart[F], strict = true) {
+      case req@POST -> Root  => req.decodeWith(multipart[F], strict = true) {
         request =>
           request.parts.find(filterFileTypes) match {
             case Some(value) => Ok(service.insertOKRB(value).compile.toList.map(_.toString()))
@@ -32,11 +32,11 @@ class OKRBEndpoints[F[_] : ConcurrentEffect : Monad](service: OKRBService[F]) ex
     }
 
   private def getOkrbList: HttpRoutes[F] = HttpRoutes.of[F] {
-    case GET -> Root / "okrb" :? OptionalPageMatcher(page):?
+    case GET -> Root  :? OptionalPageMatcher(page):?
       OptionalPageSizeMatcher(pageSize) :?
       OptionalSearchMatcher(searchField) =>
       service.getOKRB(page.getOrElse(0),pageSize.getOrElse(5),searchField.getOrElse("")).flatMap(list => Ok(list))
-    case GET -> Root/"okrb"/"length":?OptionalSearchMatcher(search)=>
+    case GET -> Root/"length":?OptionalSearchMatcher(search)=>
       service.getLength(search.getOrElse("")).flatMap(len => Ok(len))
   }
 
@@ -51,8 +51,6 @@ class OKRBEndpoints[F[_] : ConcurrentEffect : Monad](service: OKRBService[F]) ex
 object OKRBEndpoints {
   def endpoints[F[_] : ConcurrentEffect : Monad](service: OKRBService[F],
                                                  auth: AuthService[F]): HttpRoutes[F] = {
-    new OKRBEndpoints[F](service).endpoints().map(_.withHeaders(Headers.of(
-      Header("Access-Control-Allow-Origin", "http://localhost:4200"),
-      Header("Access-Control-Allow-Credentials", "true"))))
+    new OKRBEndpoints[F](service).endpoints()
   }
 }

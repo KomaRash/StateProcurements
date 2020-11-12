@@ -27,13 +27,13 @@ export class AuthGuardService implements CanActivate,CanActivateChild,CanLoad{
     return this.checkLogin(url)
   }
   checkLogin(url:string): boolean {
-   /* if(this.authService.isAuthenticated()){
+    if(this.authService.isAuthenticated()){
       return true;
     }
 
-    this.router.navigate(['/purchases'],{ queryParams: { returnUrl: url }});
-    return false;*/
-    return true;
+    // // not gged in so redirect to login page with the return url
+    this.router.navigate(['/login'], { queryParams: { returnUrl: url }});
+    return false;
   }
 
 }

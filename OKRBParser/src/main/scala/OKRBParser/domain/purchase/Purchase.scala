@@ -23,3 +23,16 @@ case class PurchaseInfo(dateOfPurchase: DateTime,
  * constraint Position_fk foreign key (PositionId) references MilitaryPosition(PositionId)
  * );
  */
+/*
+{
+        "purchaseInfo": {
+            "dateOfPurchase": "28/12/2020",
+            "positionId": 1,
+            "procedureName": "Гос закупка"
+        },
+        "description": "штаны",
+        "purchaseStatus": "Execution",
+        "purchaseLots": [],
+        "purchaseId": 4
+    }
+ */

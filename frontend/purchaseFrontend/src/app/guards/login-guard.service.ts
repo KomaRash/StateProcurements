@@ -14,7 +14,6 @@ export class LoginGuardService implements CanActivate,CanActivateChild,CanLoad{
   constructor(private authService: AuthService, private router: Router) {}
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):boolean{
     let url=state.url;
-    //console.log("жаник пидр")
     return this.checkLogin(url);
   }
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot):boolean{

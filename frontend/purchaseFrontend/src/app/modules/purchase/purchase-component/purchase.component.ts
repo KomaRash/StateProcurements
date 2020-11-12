@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PurchaseLot} from "../../../models/PurchaseLot";
 import {Purchase} from "../../../models/Purchase";
 import {PurchaseService} from "../../../services/purchase.service";
@@ -17,13 +17,13 @@ export class PurchaseComponent implements OnInit {
   purchaseForm: FormGroup
   sub:Subscription;
   enableEdit: boolean;
+  updatable:boolean=false;
   purchaseLots:PurchaseLot[]=[];
   constructor(public route: ActivatedRoute,private fb: FormBuilder,public purchaseService:PurchaseService){
     this.purchaseForm=this.fb.group({
-      purchaseDescription:[''],
-      procedureName:[''],
-      date:[''],
-      purchaseStatus:[''],
+      purchaseDescription:['',Validators.required],
+      procedureName:['',Validators.required],
+      date:['',Validators.required],
     })
     this.enableEdit=false;
     this.sub = this.route.params.subscribe(params => {
@@ -43,14 +43,23 @@ export class PurchaseComponent implements OnInit {
         purchaseDescription: [this.purchase.description],
         procedureName: [this.purchase.purchaseInfo.procedureName],
         date: [this.purchase.purchaseInfo.dateOfPurchase],
-        purchaseStatus:[this.purchase.purchaseStatus],
+
       });
     });
     this.purchaseForm.disable();
-
+    this.updatable=this.purchase.purchaseStatus=="CreatePurchase"
   }
 
   saveSegment() {
 
+  }
+
+  update() {
+      this.updatable=true;
+      this.purchaseForm.enable();
+  }
+
+  confirmUpdate() {
+    this.purchaseForm.disable();
   }
 }

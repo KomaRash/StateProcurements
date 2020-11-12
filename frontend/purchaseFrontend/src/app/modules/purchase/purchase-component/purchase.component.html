@@ -1,6 +1,12 @@
 <div>
-<form [formGroup]="purchaseForm" novalidate>
-  <div class="create-form">
+  <div>
+    <button type="button" (click)="update()" class="btn btn-info" [disabled]="updatable">Изменить закупку</button>
+  <div>
+    <button type="button" (click)="confirmUpdate()" class="btn btn-info">Изменить закупку</button>
+  </div>
+</div>
+  <form [formGroup]="purchaseForm" novalidate>
+  <div class="purchase-info-form">
     <div class="form-row">
       <div class="form-group col-md-8">
         <label >Описание Государственной закупки</label>
@@ -22,8 +28,7 @@
         <input datetime="dd-MM-yyyy" class="form-control"  formControlName="date"  >
       </div>
       <div class="form-group col-md-4">
-        <label >Статус выполнения</label>
-        <input type="text" class="form-control" formControlName="purchaseStatus">
+        <label >Статус выполнения: {{purchase.purchaseStatus}}</label>
       </div>
     </div>
   </div>

@@ -13,6 +13,10 @@
             <input formControlName="username" type="text" class="form-control" name="username" placeholder="Имя пользоваетеля">
           </div>
         </div>
+        <div class="alert alert-danger"
+             *ngIf="loginForm.controls['username'].invalid && loginForm.controls['username'].touched">
+          Не указано имя
+        </div>
         <div class="form-group row">
           <div class="col-md-12">
             <input formControlName="password" type="password" class="form-control" name="password" placeholder="Пароль">

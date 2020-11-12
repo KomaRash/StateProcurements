@@ -1,0 +1,30 @@
+<div class="purchase-info-form">
+  <div class="form-group ">
+    <label for="purchaseDescription">Описание Государственной закупки</label>
+    <textarea class="form-control" id="purchaseDescription" [disabled]="!enableEdit"
+              [(ngModel)]="purchase.description">
+        </textarea>
+    <small class="form-text text-muted">описание должно кратко описывать госзакупку</small>
+  </div>
+  <div class="form-group ">
+    <label for="purchaseOperation">Операция госзакупки</label>
+    <input type="text" class="form-control" id="purchaseOperation" list="purchaseOp" [disabled]="!enableEdit"
+           required
+           [(ngModel)]="purchase.purchaseInfo.procedureName">
+    <datalist id="purchaseOp">
+      <option value="Аукцион">
+      <option value="Целевая">
+    </datalist>
+    <small class="form-text text-muted">выберите операцию из списка или введите название операции</small>
+  </div>
+  <div class="form-group ">
+    <label for="purchaseDateCreate">Дата оформления госзакупки</label>
+    <input type="date" class="form-control" id="purchaseDateCreate"
+           [(ngModel)]="purchase.purchaseInfo.dateOfPurchase" [disabled]="!enableEdit">
+    <small class="form-text text-muted">Дата оформления госзакупок на торговых площадках</small>
+  </div>
+  <div class="form-group ">
+    <label>Статус закупки: {{purchase.purchaseStatus}}</label>
+    <small class="form-text text-muted">стадия выполнения госзакупки</small>
+  </div>
+</div>

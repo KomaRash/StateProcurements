@@ -1,0 +1,20 @@
+<div class="container ">
+  <div class="row justify-content-md-center" *ngIf="!upload;else view">
+    <mat-spinner></mat-spinner>
+  </div>
+  <ng-template #view>
+    <div class="row justify-content-md-center">
+      <div class="col-sm-3">
+        <app-purchase-info [purchase]="purchase" [enableEdit]="false"></app-purchase-info>
+      </div>
+      <div class="col-sm-9 ">
+        <app-purchase-lots-table [purchaseLots]="purchase.purchaseLots" [updateTable]="false"></app-purchase-lots-table>
+      </div>
+    </div>
+    <div class="row justify-content-md-center">
+    <app-purchase-document-list></app-purchase-document-list>
+    </div>
+  </ng-template>
+
+
+</div>

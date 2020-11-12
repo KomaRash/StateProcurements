@@ -6,7 +6,6 @@ sealed trait PurchaseStatus extends EnumEntry
 
 case object PurchaseStatus extends Enum[PurchaseStatus] with CirceEnum[PurchaseStatus] {
 
-  case object InProcess extends PurchaseStatus
 
   case object CreatedPurchase extends PurchaseStatus
 

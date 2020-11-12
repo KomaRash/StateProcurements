@@ -86,11 +86,9 @@ object PurchaseSql {
   }
 }
 
-class PostgresPurchaseRepositoryInterpreter[F[_] : Sync](tx: Transactor[F],
-                                                         maxThreadPool: Int) extends PurchaseRepositoryAlgebra[F] {
-
+class PostgresPurchaseRepositoryInterpreter[F[_] : Sync](tx: Transactor[F])
+        extends PurchaseRepositoryAlgebra[F] {
   import PurchaseSql._
-
   val dateFormatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
 
   override def getPurchase(id: PurchaseId): F[Option[Purchase]] = {
@@ -129,7 +127,7 @@ class PostgresPurchaseRepositoryInterpreter[F[_] : Sync](tx: Transactor[F],
 
   override def findByInfoAndDescription(description: String, purchaseInfo: PurchaseInfo): OptionT[F, Purchase] = {
     OptionT(
-      sql"""Select * from purchase where description=${description} and positionid=${purchaseInfo.positionId} """.
+      sql"""Select * from purchase where description=${description}  """.
         query[Purchase].option.transact(tx)
     )
   }

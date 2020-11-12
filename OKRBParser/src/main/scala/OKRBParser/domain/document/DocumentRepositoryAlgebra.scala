@@ -1,8 +1,7 @@
 package OKRBParser.domain.document
 
+import OKRBParser.domain.purchase.PurchaseId
+
 trait DocumentRepositoryAlgebra[F[_]] {
-  def load(documentId: Option[Int]): F[Document]
-
-  def upload(document: Document): F[Document]
-
+  def documentInfo(purchaseId: PurchaseId):F[List[DocumentInfo]]
 }
