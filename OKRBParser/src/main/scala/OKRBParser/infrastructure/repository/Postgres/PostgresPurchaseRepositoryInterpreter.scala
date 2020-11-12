@@ -29,7 +29,9 @@ object PurchaseSql {
     }
   implicit val readPurchaseLot: Read[PurchaseLot] = Read[(Int, Date, Float, String, Int, Int, Int, Int, Int, String)].map {
     l =>
-      PurchaseLot(OKRBProduct(l._6, l._7, l._8, l._9, l._10, l._5.some),
+      PurchaseLot(OKRBProduct(l._6, l._7,
+        l._8, l._9,
+        l._10, l._5.some),
         new DateTime(l._2), l._3, l._4, l._1.some)
   }
 
@@ -87,8 +89,10 @@ object PurchaseSql {
 }
 
 class PostgresPurchaseRepositoryInterpreter[F[_] : Sync](tx: Transactor[F])
-        extends PurchaseRepositoryAlgebra[F] {
+  extends PurchaseRepositoryAlgebra[F] {
+
   import PurchaseSql._
+
   val dateFormatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
 
   override def getPurchase(id: PurchaseId): F[Option[Purchase]] = {
