@@ -1,6 +1,6 @@
 package OKRBParser.domain.purchase
 
-import OKRBParser.domain.parseExcel.okrb.OKRBProduct
+import OKRBParser.domain.okrb.OKRBProduct
 import org.joda.time.DateTime
 
 case class PurchaseLot(okrb: OKRBProduct,

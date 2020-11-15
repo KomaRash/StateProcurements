@@ -1,4 +1,4 @@
-package OKRBParser.domain.parseExcel.okrb
+package OKRBParser.domain.okrb
 
 case class OKRBProduct(section: Int,
                        productClass: Int,

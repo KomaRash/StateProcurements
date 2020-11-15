@@ -3,11 +3,9 @@ import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-
 import {MatExpansionModule} from '@angular/material/expansion';
 import {AuthModule} from "./modules/auth/auth.module";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import {PurchaseSystemModule} from "./modules/purchase-system/purchase-system.module";
 import {AuthInterceptor} from "./services/auth.interceptor";
 import { CreateLotComponent } from './modules/create-purchase/create-lot/create-lot.component';
 import {FormsModule} from "@angular/forms";
@@ -15,7 +13,6 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule} from "@angular/material/dialog";
 import {MatButtonModule} from "@angular/material/button";
 import {MatInputModule} from "@angular/material/input";
-import {PurchaseService} from "./services/purchase.service";
 import {PurchaseServiceModule} from "./modules/purchase-service/purchase-service.module";
 
 @NgModule({
@@ -31,7 +28,6 @@ import {PurchaseServiceModule} from "./modules/purchase-service/purchase-service
     BrowserAnimationsModule,
     MatExpansionModule,
     AuthModule,
-  // PurchaseSystemModule,
     AppRoutingModule,
     FormsModule,
     MatFormFieldModule,

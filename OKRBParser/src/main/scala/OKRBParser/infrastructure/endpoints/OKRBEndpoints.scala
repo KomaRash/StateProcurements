@@ -2,7 +2,7 @@ package OKRBParser.infrastructure.endpoints
 
 import OKRBParser.ParseError
 import OKRBParser.domain.auth.AuthService
-import OKRBParser.domain.parseExcel.okrb.{OKRBProduct, OKRBService}
+import OKRBParser.domain.okrb.{OKRBProduct, OKRBService}
 import OKRBParser.infrastructure.endpoints.Pagination.{OptionalPageMatcher, OptionalPageSizeMatcher, OptionalSearchMatcher}
 import cats.Monad
 import cats.effect.ConcurrentEffect

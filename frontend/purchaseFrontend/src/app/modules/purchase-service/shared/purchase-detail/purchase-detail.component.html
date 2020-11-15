@@ -12,7 +12,9 @@
       </div>
     </div>
     <div class="row justify-content-md-center">
-    <app-purchase-document-list></app-purchase-document-list>
+      <div class="col-lg-7">
+        <app-purchase-document-list [documentList]="documentInfoList"></app-purchase-document-list>
+      </div>
     </div>
   </ng-template>
 

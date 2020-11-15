@@ -3,9 +3,10 @@ package OKRBParser
 import OKRBParser.config.{DatabaseConfig, RepositoryConfig}
 import OKRBParser.domain.auth.AuthService
 import OKRBParser.domain.document.DocumentService
-import OKRBParser.domain.parseExcel.okrb.OKRBService
+import OKRBParser.domain.okrb.OKRBService
+import OKRBParser.domain.position.UserService
 import OKRBParser.domain.purchase.PurchaseService
-import OKRBParser.infrastructure.endpoints.{AuthEndpoints, DocumentEndpoints, OKRBEndpoints, PurchaseEndpoints}
+import OKRBParser.infrastructure.endpoints.{AuthEndpoints, DocumentEndpoints, OKRBEndpoints, PurchaseEndpoints, UserEndpoints}
 import OKRBParser.infrastructure.parseExcel.ParseErrorInterpreter
 import OKRBParser.infrastructure.parseExcel.okrb.OKRBParseInterpreter
 import OKRBParser.infrastructure.repository.Postgres.{PostgresAuthRepositoryInterpreter, PostgresDocumentRepositoryInterpreter, PostgresOKRBRepositoryInterpreter, PostgresPurchaseRepositoryInterpreter, PostgresUserRepositoryInterpreter}
@@ -48,16 +49,19 @@ object TestApp extends IOApp {
     purchaseService = PurchaseService.service(purchaseRepository)
     authService = new AuthService[F](userRepository, authRepository)
     docService =new DocumentService[F](documentRepository)
+    userService=UserService.service(userRepository)
     purchaseEndpoints = PurchaseEndpoints.endpoints(purchaseService, authService)
     authEndpoints = AuthEndpoints.endpoints(authService)
     okrbEndpoints=OKRBEndpoints.endpoints(service,authService)
     documentEndpoints=DocumentEndpoints.endpoints(docService,authService)
+    userEndpoints=UserEndpoints.endpoints(userService,authService)
     serviceEndpoints=CORS(
       Router(
         "purchases"->purchaseEndpoints,
         "okrb"->okrbEndpoints,
         "auth"->authEndpoints,
-        "documents"->documentEndpoints
+        "documents"->documentEndpoints,
+        "users"->userEndpoints
       )).map(_.withHeaders(Headers.of(
       Header("Access-Control-Allow-Origin", "http://localhost:4200"),
       Header("Access-Control-Allow-Credentials", "true"))))

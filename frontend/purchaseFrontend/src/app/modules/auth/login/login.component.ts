@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit {
 
   login(data) {
     this.auth.login(data.password, data.username).subscribe(() =>
-      this.router.navigate(['/purchases']))
+      this.router.navigate(['/user']))
     return true;
   }
 

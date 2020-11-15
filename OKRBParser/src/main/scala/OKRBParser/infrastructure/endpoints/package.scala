@@ -1,7 +1,7 @@
 package OKRBParser.infrastructure
 
 import OKRBParser.domain.document.DocumentInfo
-import OKRBParser.domain.parseExcel.okrb.OKRBProduct
+import OKRBParser.domain.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User, UserId, UsernamePasswordCredentials}
 import OKRBParser.domain.purchase.{Purchase, PurchaseInfo, PurchaseLot}
 import io.circe._
@@ -48,4 +48,5 @@ package object endpoints {
   lazy implicit val PositionCodec: Codec[Position] = deriveCodec
   lazy implicit val UserCodec: Codec[User] = deriveCodec
   lazy implicit val DocumentInfoCodec:Codec[DocumentInfo]=deriveCodec
+
 }

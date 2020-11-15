@@ -1,0 +1,15 @@
+<section class="header-container">
+  <div class="row">
+    <div class="col-md-6 header-title-container">
+      <a [routerLink]="['user/']"><h3><span class="govGreen">Гос</span><span class="govRed">Закупки</span></h3></a>
+    </div>
+    <div class="col-md-6 header-navigation-container">
+      <ul>
+        <li><a [routerLink]="['user/create']" [routerLinkActive]="['nav-active']" [routerLinkActiveOptions]="{exact:true}">Создать закупку</a></li>
+        <li><a [routerLink]="['user/']" [routerLinkActive]="['nav-active']" [routerLinkActiveOptions]="{exact:true}">Список закупок</a></li>
+        <li><a (click)="logout()">Выйти из Системы</a></li>
+
+      </ul>
+    </div>
+  </div>
+</section>

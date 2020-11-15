@@ -1,9 +1,6 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {RouterModule, Routes} from "@angular/router";
-import {AuthGuardService} from "../../guards/auth-guard.service";
-import {ExpansionPurchaseComponent} from "../expansion-purchase/expansion-purchase.component";
-import { HeaderNavBarComponent } from './header-nav-bar/header-nav-bar.component';
 import {PurchaseServiceComponent} from "./purchase-service.component";
 import {BrowserModule} from "@angular/platform-browser";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -15,45 +12,64 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatSortModule} from "@angular/material/sort";
 import {MatIconModule} from "@angular/material/icon";
-import { PurchaseInfoComponent } from './shared/purchase-info/purchase-info.component';
-import { PurchaseDetailComponent } from './user/purchase-detail/purchase-detail.component';
+import {PurchaseInfoComponent} from './shared/purchase-info/purchase-info.component';
+import {PurchaseDetailComponent} from './shared/purchase-detail/purchase-detail.component';
 import {MatButtonModule} from "@angular/material/button";
-import { PurchaseLotsTableComponent } from './shared/purchase-lots-table/purchase-lots-table.component';
-import { PurchaseDocumentListComponent } from './shared/purchase-document-list/purchase-document-list.component';
+import {PurchaseLotsTableComponent} from './shared/purchase-lots-table/purchase-lots-table.component';
+import {PurchaseDocumentListComponent} from './shared/purchase-document-list/purchase-document-list.component';
+import { UserListComponent } from './admin/user-list/user-list.component';
+import { PurchaseListComponent } from './shared/purchase-list/purchase-list.component';
+import { PurchaseLotDetailComponent } from './shared/purchase-lot-detail/purchase-lot-detail.component';
+import {UserModule} from "./user/user.module";
+import {UserComponent} from "./user/user.component";
+import {AdminComponent} from "./admin/admin.component";
+import {AdminGuard} from "../../guards/admin.guard";
+import {UserGuard} from "../../guards/user.guard";
 
 
 export const routes: Routes = [
   {
-    path: 'purchases',
-    component: PurchaseServiceComponent,
-    canActivate: [AuthGuardService],
+    path: 'user',
+    component:PurchaseServiceComponent,
+    canActivate: [UserGuard],
     children: [
-      { path: '', component: ExpansionPurchaseComponent },
+      {path: '', component: UserComponent},
     ]
   },
   {
-    path: 'purchases/:id',
-    component: PurchaseServiceComponent,
-    canActivate: [AuthGuardService],
+    path: 'admin',
+    component:PurchaseServiceComponent,
+    canActivate: [AdminGuard],
     children: [
-      { path: '', component: PurchaseDetailComponent }
+      {path: '', component: AdminComponent},
     ]
+  }
 
-  }]
+]
+
 @NgModule({
   declarations: [
-    HeaderNavBarComponent,
-    ExpansionPurchaseComponent,
     PurchaseServiceComponent,
     PurchaseInfoComponent,
     PurchaseDetailComponent,
     PurchaseLotsTableComponent,
-    PurchaseDocumentListComponent
+    PurchaseDocumentListComponent,
+    UserListComponent,
+    PurchaseListComponent,
+    PurchaseLotDetailComponent,
+
   ],
   exports: [
-    HeaderNavBarComponent,
     PurchaseInfoComponent,
-    ExpansionPurchaseComponent
+    PurchaseServiceComponent,
+    PurchaseInfoComponent,
+    PurchaseDetailComponent,
+    PurchaseLotsTableComponent,
+    PurchaseDocumentListComponent,
+    UserListComponent,
+    PurchaseListComponent,
+    PurchaseLotDetailComponent,
+
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -72,6 +88,8 @@ export const routes: Routes = [
     MatSortModule,
     MatIconModule,
     MatButtonModule,
+    UserModule,
   ]
 })
-export class PurchaseServiceModule { }
+export class PurchaseServiceModule {
+}

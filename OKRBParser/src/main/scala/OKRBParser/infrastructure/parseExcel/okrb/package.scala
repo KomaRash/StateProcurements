@@ -1,7 +1,7 @@
 package OKRBParser.infrastructure.parseExcel
 
 import OKRBParser.domain.parseExcel.ParseResult
-import OKRBParser.domain.parseExcel.okrb.OKRBProduct
+import OKRBParser.domain.okrb.OKRBProduct
 import OKRBParser.infrastructure.parseExcel.ExcelRowParser._
 import cats.data.Validated
 import cats.instances.list._

@@ -1,6 +1,5 @@
 package OKRBParser.domain.purchase
 
-import OKRBParser.domain.parseExcel.RepositoryAlgebra
 import OKRBParser.domain.position.{PositionId, UserId}
 import cats.data.OptionT
 

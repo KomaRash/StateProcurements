@@ -24,10 +24,5 @@ export class PurchaseService {
     return this.http.get<Purchase>(appConfig.url+"purchases/"+purchaseId)
   }
 
-  getOKRB(okrb: OKRBProduct) {
-    return okrb.section+'.'+
-      okrb.productClass+'.'+
-      okrb.subCategories+'.'+
-      okrb.grouping
-  }
+
 }

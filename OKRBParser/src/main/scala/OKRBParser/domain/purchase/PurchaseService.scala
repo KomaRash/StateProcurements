@@ -1,13 +1,13 @@
 package OKRBParser.domain.purchase
 
-import OKRBParser.domain.position.{PositionId, User, UserId}
+import OKRBParser.domain.position.{PositionId, UserId}
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
 
 class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
                             validation: PurchaseValidationAlgebra[F]) {
-  def updateLotAdmin(id: Option[PurchaseId], lot: PurchaseLot, user: User)(implicit M: Monad[F]): EitherT[F, PurchaseError, PurchaseLot] = {
+  def updateLotAdmin(id: Option[PurchaseId], lot: PurchaseLot)(implicit M: Monad[F]): EitherT[F, PurchaseError, PurchaseLot] = {
     for {
       _ <- validation.exist(id)
       _ <- validation.lotExist(id, lot)
@@ -15,7 +15,7 @@ class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
     } yield saved
   }
 
-  def updateLotUser(id: Option[PurchaseId], lot: PurchaseLot, user: User)(implicit M: Monad[F]): EitherT[F, PurchaseError, PurchaseLot] = {
+  def updateLotUser(id: Option[PurchaseId], lot: PurchaseLot)(implicit M: Monad[F]): EitherT[F, PurchaseError, PurchaseLot] = {
     for {
       _ <- validation.alreadyExecution(id)
       _ <- validation.exist(id)
@@ -32,7 +32,7 @@ class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
 
   }
 
-  def addLots(purchaseId: Option[PurchaseId], lots: List[PurchaseLot], user: User)(implicit M: Monad[F]): EitherT[F, PurchaseError, Option[Purchase]] = {
+  def addLots(purchaseId: Option[PurchaseId], lots: List[PurchaseLot])(implicit M: Monad[F]): EitherT[F, PurchaseError, Option[Purchase]] = {
     for {
       _ <- validation.exist(purchaseId)
       _ <- validation.doesNotCreated(purchaseId)
@@ -41,13 +41,17 @@ class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
     } yield saved
   }
 
-  def confirmCreatePurchase(purchase: Purchase, user: User)(implicit M: Monad[F]): EitherT[F, PurchaseError, Option[Purchase]] = {
+  def confirmCreatePurchase(purchase: Purchase)(implicit M: Monad[F]): EitherT[F, PurchaseError, Option[Purchase]] = {
     for {
       _ <- validation.compare(purchase)
       id <- EitherT.fromOptionF(purchase.purchaseId.pure[F], PurchaseNotFound)
       purchase <- EitherT.liftF(repository.setStatus(PurchaseStatus.Execution, id))
     } yield purchase
   }
+
+  def confirmCompletePurchase(purchaseId: PurchaseId)(implicit M: Monad[F]): EitherT[F, PurchaseError, Option[Purchase]] = for {
+    purchase <- EitherT.liftF(repository.setStatus(PurchaseStatus.CompletedPurchase, purchaseId))
+  } yield purchase
 
   def getPurchaseList(userId: UserId)(implicit M: Monad[F]): F[List[Purchase]] = {
     repository.getPurchaseList(userId)

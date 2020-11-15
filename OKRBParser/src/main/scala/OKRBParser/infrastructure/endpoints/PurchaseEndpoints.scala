@@ -1,7 +1,7 @@
 package OKRBParser.infrastructure.endpoints
 
 import OKRBParser.domain.auth.{Auth, AuthService}
-import OKRBParser.domain.parseExcel.okrb.OKRBProduct
+import OKRBParser.domain.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User}
 import OKRBParser.domain.purchase._
 import cats.Monad
@@ -58,7 +58,7 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
     case req@POST -> Root  / id / "lots" asAuthed user =>
       (for {
         lots <- req.request.as[List[PurchaseLot]]
-        p <- service.addLots(Try(id.toInt).toOption, lots, user).value
+        p <- service.addLots(Try(id.toInt).toOption, lots).value
       } yield p).flatMap {
         case Right(value) => Ok(value)
         case Left(PurchaseAlreadyExecution) => Conflict()
@@ -74,7 +74,7 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
     case req@PUT -> Root  / id / "lots" asAuthed user =>
       (for {
         lot <- req.request.as[PurchaseLot]
-        p <- service.updateLotUser(Try(id.toInt).toOption, lot, user).value
+        p <- service.updateLotUser(Try(id.toInt).toOption, lot).value
       } yield p).flatMap {
         case Left(PurchaseNotFound) => NotFound()
         case Left(PurchaseLotNotFound) => NotFound()
@@ -85,7 +85,7 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
     case req@GET -> Root  asAuthed user =>
       val purchase = for {
         purchase <- req.request.as[Purchase]
-        p <- service.confirmCreatePurchase(purchase, user).value
+        p <- service.confirmCreatePurchase(purchase).value
       } yield p
       purchase.flatMap {
         case Left(PurchaseNotFound) | Right(None) => NotFound()
@@ -99,7 +99,7 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
     case req@PUT -> Root  / id / "lots" asAuthed user =>
       (for {
         lot <- req.request.as[PurchaseLot]
-        p <- service.updateLotAdmin(Try(id.toInt).toOption, lot, user).value
+        p <- service.updateLotAdmin(Try(id.toInt).toOption, lot).value
       } yield p).flatMap {
         case Left(PurchaseNotFound) => NotFound()
         case Left(PurchaseLotNotFound) => NotFound()
@@ -117,7 +117,7 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
   def endpoints: HttpRoutes[F] = {
     val authEndpoints: TSecAuthService[User, Token, F] = {
       val adminEndpoints = updatePurchase
-      (Auth.directorOnly(adminEndpoints))
+      Auth.directorOnly(adminEndpoints)
     }
     val userEndpoints = {
       val userEndpoints = getPurchase.orElse(createPurchase)

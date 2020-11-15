@@ -1,6 +1,6 @@
 package OKRBParser.infrastructure.repository.MySql
 
-import OKRBParser.domain.parseExcel.okrb.{OKRBProduct, OKRBRepositoryAlgebra}
+import OKRBParser.domain.okrb.{OKRBProduct, OKRBRepositoryAlgebra}
 import cats.effect.Sync
 import doobie.implicits._
 import doobie.util.transactor.Transactor

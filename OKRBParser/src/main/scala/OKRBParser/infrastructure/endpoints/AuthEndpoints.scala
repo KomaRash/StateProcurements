@@ -41,9 +41,8 @@ class AuthEndpoints[F[_] : Sync : Monad](authService: AuthService[F]) extends Ht
           case None => Conflict()
         }
     }
-  def endpoints(): HttpRoutes[F] = {
-    loginRoute
-  }
+  def endpoints(): HttpRoutes[F] = loginRoute
+
 }
 
 object AuthEndpoints {

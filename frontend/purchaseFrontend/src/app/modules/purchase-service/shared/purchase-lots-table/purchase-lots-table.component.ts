@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {PurchaseLot} from "../../../../models/PurchaseLot";
+import {OKRBProduct} from "../../../../models/OKRBProduct";
 
 @Component({
   selector: 'app-purchase-lots-table',
@@ -13,5 +14,10 @@ export class PurchaseLotsTableComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+  getOKRB(okrb: OKRBProduct) {
+    return okrb.section+'.'+
+      okrb.productClass+'.'+
+      okrb.subCategories+'.'+
+      okrb.grouping
+  }
 }

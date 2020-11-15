@@ -1,4 +1,4 @@
-package OKRBParser.domain.parseExcel.okrb
+package OKRBParser.domain.okrb
 
 import cats.data.EitherT
 import cats.effect.Concurrent
@@ -16,7 +16,7 @@ class OKRBService[F[_] : Concurrent](repository: OKRBRepositoryAlgebra[F],
   }
 
   def insertOKRB(okrbDocument: Part[F]): fs2.Stream[F, Int] = {
-    val okrbProducts = for {
+    val okrbProducts = for {public
       document <- okrbParse.giveDocument(okrbDocument)
       row <- okrbParse.getStreamSheet(document)
       okrbProduct <- okrbParse.convectRow(row)

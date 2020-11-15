@@ -1,6 +1,5 @@
 package OKRBParser.domain.auth
 
-import OKRBParser.domain.parseExcel.RepositoryAlgebra
 import OKRBParser.domain.position.{PositionId, UserId}
 import tsec.authentication.TSecBearerToken
 import tsec.common.SecureRandomId

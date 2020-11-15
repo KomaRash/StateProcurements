@@ -1,9 +1,8 @@
-package OKRBParser.domain.parseExcel.okrb
+package OKRBParser.domain.okrb
 
-import OKRBParser.domain.parseExcel.RepositoryAlgebra
-import fs2.{Chunk, Stream}
+import fs2.Chunk
 
-trait OKRBRepositoryAlgebra[F[_]] extends RepositoryAlgebra[F] {
+trait OKRBRepositoryAlgebra[F[_]] {
   def getLength(str: String): F[Option[Int]]
 
   def getOKRBList(pageSize: Int, page: Int, searchField: String): F[List[OKRBProduct]]

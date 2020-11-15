@@ -1,4 +1,4 @@
-package OKRBParser.domain.parseExcel.okrb
+package OKRBParser.domain.okrb
 
 import OKRBParser.domain.parseExcel.ParseAlgebra
 import org.apache.poi.ss.usermodel.Row

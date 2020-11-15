@@ -14,7 +14,7 @@ object Role extends SimpleAuthEnum[Role, String] {
   val Director: Role = Role("Director")
 
   implicit val E: Eq[Role] = Eq.fromUniversalEquals[Role]
-  protected val values: AuthGroup[Role] = AuthGroup(/*Administrator,*/ User, Director)
+  protected val values: AuthGroup[Role] = AuthGroup(User, Director)
 
   def getRepr(t: Role): String = t.roleRepr
 

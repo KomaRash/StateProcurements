@@ -3,17 +3,23 @@ import {HttpClient} from "@angular/common/http";
 import {appConfig} from "../app.config";
 import {DocumentInfo} from "../models/DocumentInfo";
 import {Observable} from "rxjs";
-
+import * as fileSaver from 'file-saver';
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
 
 
-  constructor(public http:HttpClient){
+  constructor(private http:HttpClient){
 
   }
-  getDocumentsInfo(purchaseId:number): Observable<Array<DocumentInfo>> {
-   return  this.http.get<Array<DocumentInfo>>(appConfig.url+`purchases/${purchaseId}/documents`)
+  getDocumentsInfo(purchaseId:string): Observable<Array<DocumentInfo>> {
+   return  this.http.get<Array<DocumentInfo>>(appConfig.url+`documents/purchases/${purchaseId}`)
   }
+  downloadDocument(link:string){
+    return  this.http.get<Response>(appConfig.url+`documents/${link}`).subscribe(data=> {
+
+    })
+  }
+ /* getDocument(sourceLink:string):Observable<M>*/
 }

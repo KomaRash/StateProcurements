@@ -26,7 +26,7 @@
     </tr>
 
     <tr *ngFor="let purchaseLot of purchaseLots; let i = index">
-      <td>{{(purchaseLot.okrb)}}</td>
+      <td>{{getOKRB(purchaseLot.okrb)}}</td>
       <td>{{purchaseLot.okrb.name}}</td>
       <td>{{purchaseLot.name}}</td>
       <td>{{purchaseLot.amount}}</td>

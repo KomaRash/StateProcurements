@@ -2,7 +2,7 @@ package OKRBParser.infrastructure.repository.Postgres
 
 import java.util.Date
 
-import OKRBParser.domain.parseExcel.okrb.OKRBProduct
+import OKRBParser.domain.okrb.OKRBProduct
 import OKRBParser.domain.position.{PositionId, UserId}
 import OKRBParser.domain.purchase._
 import cats.data.OptionT

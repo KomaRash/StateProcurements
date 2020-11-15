@@ -1,7 +1,7 @@
 package OKRBParser.infrastructure.parseExcel.okrb
 
 import OKRBParser.StreamUtils
-import OKRBParser.domain.parseExcel.okrb.{OKRBParseAlgebra, OKRBProduct}
+import OKRBParser.domain.okrb.{OKRBParseAlgebra, OKRBProduct}
 import OKRBParser.domain.parseExcel.ParseErrorAlgebra
 import OKRBParser.infrastructure.parseExcel.ParseInterpreter
 import cats.effect.ConcurrentEffect

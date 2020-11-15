@@ -40,8 +40,8 @@ export class AuthService {
     localStorage.removeItem('position');
   }
 
-  isAuthenticated() {
-    return (localStorage.getItem('token')) ? true : false;
+  isAuthenticated(role:string) {
+    return (localStorage.getItem('token')) && (localStorage.getItem('position')===role) ? true : false;
 
   }
 
