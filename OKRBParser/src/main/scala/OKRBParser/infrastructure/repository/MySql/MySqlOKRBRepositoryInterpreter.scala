@@ -31,7 +31,7 @@ class MySqlOKRBRepositoryInterpreter[F[_]:Sync](tx:Transactor[F],
     sql"""DELETE from okrb where true""".update.run.transact(tx)
   }
 
-  override def maxThreadPool(): Int = maxThreadPool
+  //override def maxThreadPool(): Int = maxThreadPool
 
   override def getOKRBList(pageSize: Int, page: Int, searchField: String): F[List[OKRBProduct]] = ???
 

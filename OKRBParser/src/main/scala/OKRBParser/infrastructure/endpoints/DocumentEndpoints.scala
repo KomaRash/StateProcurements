@@ -9,13 +9,12 @@ import org.http4s.EntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe.jsonOf
 import org.http4s.dsl.Http4sDsl
-import org.http4s.multipart.Multipart
 import org.http4s.{EntityDecoder, HttpRoutes, ApiVersion => _}
 import tsec.authentication._
 
 class DocumentEndpoints[F[_] : ConcurrentEffect : Monad](service: DocumentService[F],
-                                                         authService: AuthService[F])
-  extends Http4sDsl[F] {
+                                                         authService: AuthService[F],
+                                                        ) extends Http4sDsl[F] {
   lazy implicit val DocumentInfoDecoder: EntityDecoder[F, List[DocumentInfo]] = jsonOf[F, List[DocumentInfo]]
 
   private def getDocumentInfo: AuthEndpoint[F, Token] = {
@@ -36,10 +35,9 @@ class DocumentEndpoints[F[_] : ConcurrentEffect : Monad](service: DocumentServic
   }
 
   private def downloadDocument: AuthEndpoint[F, Token] = {
-    case GET -> Root / link asAuthed user => for {
-      document <- service.downloadDocument(link)
-      response <- Ok(Multipart(Vector(document.toPart)))
-    } yield response
+    case req@GET -> Root / link asAuthed user => {
+      service.downloadDocument(link, req.request).getOrElseF(NotFound())
+    }
   }
 
   def endpoints(): HttpRoutes[F] = {

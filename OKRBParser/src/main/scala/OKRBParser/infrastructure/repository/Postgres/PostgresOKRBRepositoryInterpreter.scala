@@ -33,7 +33,7 @@ class PostgresOKRBRepositoryInterpreter[F[_] : Sync](tx: Transactor[F],
     sql"""DELETE from okrb where true""".update.run.transact(tx)
   }
 
-  override def maxThreadPool(): Int = maxThreadPool
+ // override def maxThreadPool(): Int = maxThreadPool
 
   override def getLength(str: String): F[Option[Int]] = rowCountByName(str).option.transact(tx)
 }

@@ -4,7 +4,6 @@ import {RouterModule, Routes} from "@angular/router";
 import {LoginComponent} from "./login/login.component";
 import {LoginGuardService} from "../../guards/login-guard.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {BrowserModule} from "@angular/platform-browser";
 import {AuthService} from "../../services/auth.service";
 
 export const routes: Routes = [
@@ -19,7 +18,7 @@ export const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes),
     CommonModule,
-    BrowserModule,
+
     FormsModule,
     ReactiveFormsModule
   ],

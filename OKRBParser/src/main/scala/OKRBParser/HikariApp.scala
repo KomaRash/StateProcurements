@@ -10,6 +10,7 @@ import OKRBParser.infrastructure.endpoints.{AuthEndpoints, DocumentEndpoints, OK
 import OKRBParser.infrastructure.parseExcel.ParseErrorInterpreter
 import OKRBParser.infrastructure.parseExcel.okrb.OKRBParseInterpreter
 import OKRBParser.infrastructure.repository.Postgres.{PostgresAuthRepositoryInterpreter, PostgresDocumentRepositoryInterpreter, PostgresOKRBRepositoryInterpreter, PostgresPurchaseRepositoryInterpreter, PostgresUserRepositoryInterpreter}
+import OKRBParser.infrastructure.repository.fileSystem.DocumentFileSystemInterpreter
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
 import cats.implicits._
 import doobie.util.ExecutionContexts
@@ -41,14 +42,14 @@ object TestApp extends IOApp {
     excelParser=new OKRBParseInterpreter[F](parseAlgebra)
     database=new PostgresOKRBRepositoryInterpreter[F](transactor,10)
     service= new OKRBService[F](database,excelParser)
-
+    docFileSystem=new DocumentFileSystemInterpreter[F](blocker)
     userRepository = new PostgresUserRepositoryInterpreter[F](transactor)
     authRepository = new PostgresAuthRepositoryInterpreter[F](transactor)
     purchaseRepository = new PostgresPurchaseRepositoryInterpreter[F](transactor)
     documentRepository=new PostgresDocumentRepositoryInterpreter[F](transactor)
     purchaseService = PurchaseService.service(purchaseRepository)
     authService = new AuthService[F](userRepository, authRepository)
-    docService =new DocumentService[F](documentRepository)
+    docService =new DocumentService[F](documentRepository,docFileSystem)
     userService=UserService.service(userRepository)
     purchaseEndpoints = PurchaseEndpoints.endpoints(purchaseService, authService)
     authEndpoints = AuthEndpoints.endpoints(authService)

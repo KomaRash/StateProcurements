@@ -16,7 +16,10 @@ import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 
 object PurchaseSql {
-  implicit val writePurchaseLots: Write[(PurchaseLot, Int)] = Write[(Float, Date, String, Option[Int], Int)].contramap(lot => (lot._1.amount, lot._1.deadline.toDate, lot._1.name, lot._1.okrb.okrbId, lot._2))
+  implicit val writePurchaseLots: Write[(PurchaseLot, Int)] = Write[(Float, Date, String, Option[Int], Int, String)].contramap(lot => (
+    lot._1.amount, lot._1.deadline.toDate,
+    lot._1.name, lot._1.okrb.okrbId,
+    lot._2, lot._1.lotStatus.toString))
   implicit val readPurchaseWithoutLots: Read[Purchase] =
     Read[(Int, String, java.util.Date, Int, String, String)].map {
       p =>
@@ -27,12 +30,30 @@ object PurchaseSql {
           List(),
           p._1.some)
     }
-  implicit val readPurchaseLot: Read[PurchaseLot] = Read[(Int, Date, Float, String, Int, Int, Int, Int, Int, String)].map {
-    l =>
-      PurchaseLot(OKRBProduct(l._6, l._7,
-        l._8, l._9,
-        l._10, l._5.some),
-        new DateTime(l._2), l._3, l._4, l._1.some)
+  /**
+   * sql"""select  p.purchaselotid,p.deadline,p.lotamount,
+   * |p.lotname,p.purchaseLotStatus,
+   * |o.productid,o.section,
+   * |o.class,o.subcategories,
+   * |o.groupings,
+   * |o.name from purchaselot as p
+   * |  natural join okrb as o
+   * |  where purchaseid=$purchaseId""".stripMargin.
+   * query[PurchaseLot]
+   */
+  implicit val readPurchaseLot: Read[PurchaseLot] = Read[(Int, Date, Float,
+    String, String,
+    Int, Int,
+    Int, Int,
+    Int, String)].map { l =>
+    PurchaseLot(
+      OKRBProduct(
+        l._7, l._8, l._9,
+        l._10, l._11, l._6.some),
+      new DateTime(l._2), l._3,
+      l._4, PurchaseLotStatus.withName(l._5),
+      l._1.some
+    )
   }
 
   def selectList(userId: UserId): doobie.Query0[Purchase] = {
@@ -52,9 +73,11 @@ object PurchaseSql {
 
   def selectPurchaseLots(purchaseId: PurchaseId): doobie.Query0[PurchaseLot] = {
     sql"""select  p.purchaselotid,p.deadline,p.lotamount,
-         |p.lotname,o.productid, section,
-         | class, subcategories, groupings,
-         |  name from purchaselot as p
+         |p.lotname,p.purchaseLotStatus,
+         |o.productid,o.section,
+         |o.class,o.subcategories,
+         |o.groupings,o.name
+         |from purchaselot as p
          |  natural join okrb as o
          |  where purchaseid=$purchaseId""".stripMargin.
       query[PurchaseLot]
@@ -72,11 +95,14 @@ object PurchaseSql {
   }
 
   def insertLots(purchaseLots: List[PurchaseLot], purchaseId: PurchaseId): doobie.ConnectionIO[PurchaseId] = {
-    val sql = s"""insert into purchaselot ( lotamount,deadline, lotname,productid,purchaseid) values (?,?,?,?,?);"""
+    val sql =
+      sql"""insert into purchaselot ( lotamount,deadline,
+           | lotname,productid,
+           | purchaseid,purchaselotstatus) values (?,?,?,?,?,?);""".stripMargin.toString()
     Update[(PurchaseLot, Int)](sql).updateMany(purchaseLots.map((_, purchaseId)))
   }
 
-  def updateStatus(purchaseStatus: PurchaseStatus, purchaseId: PurchaseId): doobie.Update0 = {
+  def updatePurchaseStatus(purchaseStatus: PurchaseStatus, purchaseId: PurchaseId): doobie.Update0 = {
     sql"""update purchase set status=${purchaseStatus.toString()} where purchaseid=$purchaseId""".update
   }
 
@@ -136,11 +162,11 @@ class PostgresPurchaseRepositoryInterpreter[F[_] : Sync](tx: Transactor[F])
     )
   }
 
-  override def maxThreadPool(): Int = ???
+  // override def maxThreadPool(): Int = ???
 
   override def setStatus(purchaseStatus: PurchaseStatus, purchaseId: PurchaseId): F[Option[Purchase]] = {
     for {
-      _ <- updateStatus(purchaseStatus, purchaseId).run.transact(tx)
+      _ <- updatePurchaseStatus(purchaseStatus, purchaseId).run.transact(tx)
       purchase <- getPurchaseWithLots(purchaseId)
     } yield purchase
   }

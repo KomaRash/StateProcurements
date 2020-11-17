@@ -1,9 +1,8 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AdminComponent } from './admin.component';
-import { HeaderNavBarComponent } from './header-nav-bar/header-nav-bar.component';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {AdminComponent} from './admin.component';
+import {HeaderNavBarComponent} from './header-nav-bar/header-nav-bar.component';
 import {RouterModule, Routes} from "@angular/router";
-import {BrowserModule} from "@angular/platform-browser";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AppRoutingModule} from "../../../app-routing.module";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -17,14 +16,18 @@ import {MatButtonModule} from "@angular/material/button";
 import {PurchaseListComponent} from "../shared/purchase-list/purchase-list.component";
 import {UserListComponent} from "./user-list/user-list.component";
 import {AdminGuard} from "../../../guards/admin.guard";
+import {BrowserModule} from "@angular/platform-browser";
+import {SharedModule} from "../shared/shared.module";
 
 const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'users',
+    path: 'admin',
+    canActivate: [AdminGuard],
+    redirectTo: 'admin/users',
+    pathMatch: 'full'
   },
   {
-    path: 'users',
+    path: 'admin/users',
     component: AdminComponent,
     canActivate: [AdminGuard],
     children: [
@@ -34,14 +37,13 @@ const routes: Routes = [
   },
 ]
 
-
-
 @NgModule({
-  declarations: [AdminComponent, HeaderNavBarComponent],
+  declarations: [
+    AdminComponent,
+    HeaderNavBarComponent],
   imports: [
-    RouterModule.forChild(routes),
+    RouterModule.forRoot(routes),
     CommonModule,
-    BrowserModule,
     FormsModule,
     CommonModule,
     AppRoutingModule,
@@ -55,6 +57,8 @@ const routes: Routes = [
     MatSortModule,
     MatIconModule,
     MatButtonModule,
+    SharedModule
   ]
 })
-export class AdminModule { }
+export class AdminModule {
+}

@@ -3,7 +3,7 @@ package OKRBParser.domain.purchase
 import OKRBParser.domain.position.{PositionId, UserId}
 import cats.data.OptionT
 
-trait PurchaseRepositoryAlgebra[F[_]] extends RepositoryAlgebra[F] {
+trait PurchaseRepositoryAlgebra[F[_]]{
   def updateLotInfo(id: Option[PurchaseId], lot: PurchaseLot): F[PurchaseLot]
 
   def getStatus(id: PurchaseId): F[Option[PurchaseStatus]]

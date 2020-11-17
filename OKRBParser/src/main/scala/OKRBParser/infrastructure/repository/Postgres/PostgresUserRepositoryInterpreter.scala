@@ -18,7 +18,7 @@ class PostgresUserRepositoryInterpreter[F[_] : Sync](tx: Transactor[F],
     getByUCredentials(usernamePasswordCredentials).option.transact(tx)
   }
 
-  override def maxThreadPool(): Int = 1
+ // override def maxThreadPool(): Int = 1
 
   override def getUserList: F[List[User]] = selectUsers.to[List].transact(tx)
 }

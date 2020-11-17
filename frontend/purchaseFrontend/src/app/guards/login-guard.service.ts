@@ -25,8 +25,12 @@ export class LoginGuardService implements CanActivate,CanActivateChild,CanLoad{
     return this.checkLogin(url)
   }
   checkLogin(url:string): boolean {
-    if(this.authService.isAuthenticated()){
-      this.router.navigate(['/purchases'],{ queryParams: { returnUrl: url }});
+    if(this.authService.isAuthenticated('Director')){
+      this.router.navigate(['/admin'],/*{ queryParams: { returnUrl: url }}*/);
+      return false;
+    } else
+    if(this.authService.isAuthenticated('User')){
+      this.router.navigate(['/user'],/*{ queryParams: { returnUrl: url }}*/);
       return false;
     }
     return true;

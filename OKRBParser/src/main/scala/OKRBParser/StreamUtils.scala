@@ -8,6 +8,7 @@ trait StreamUtils[F[_]] {
   def fromIterator[A](iterator:Iterator[A])(implicit F: Sync[F]):Stream[F,A]=Stream.fromIterator[F](iterator)
   def error[A](error:OKRBError)(implicit F: Sync[F]): Stream[F, A] =
     Stream.raiseError(error).covary[F]
+  def emits[A](seq:Seq[A]):Stream[F,A]=Stream.emits[F,A](seq)
 }
 
 object StreamUtils {

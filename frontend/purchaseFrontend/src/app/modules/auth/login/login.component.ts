@@ -30,8 +30,16 @@ export class LoginComponent implements OnInit {
   }
 
   login(data) {
-    this.auth.login(data.password, data.username).subscribe(() =>
-      this.router.navigate(['/user']))
+    this.auth.login(data.password, data.username).subscribe(() => {
+      if (this.auth.isAuthenticated('User')) {
+        this.router.navigate(['/user'])
+      }
+      else if (this.auth.isAuthenticated('Director')) {
+
+        this.router.navigate(['/admin'])
+      }
+    })
+
     return true;
   }
 

@@ -5,5 +5,6 @@ export interface PurchaseLot {
     deadline: Date,
     amount: number,
     name: String,
+    purchaseLotStatus:String,
     lotId?: number
 }

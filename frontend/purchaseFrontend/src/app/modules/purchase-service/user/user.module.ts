@@ -17,14 +17,19 @@ import {MatSortModule} from "@angular/material/sort";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {UserGuard} from "../../../guards/user.guard";
+import { CreatePurchaseComponent } from './create-purchase/create-purchase.component';
+import {PurchaseServiceModule} from "../purchase-service.module";
+import {SharedModule} from "../shared/shared.module";
 
-const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'purchases',
+export const userRoutes: Routes = [
+ {
+    path: 'user',
+    redirectTo: 'user/purchases',
+    canActivate: [UserGuard],
+    pathMatch: 'full'
   },
   {
-    path: 'purchases',
+    path: 'user/purchases',
     component: UserComponent,
     canActivate: [UserGuard],
     children: [
@@ -37,13 +42,12 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     HeaderNavBarComponent,
-    UserComponent
+    UserComponent,
+    CreatePurchaseComponent
   ],
-
   imports: [
-    RouterModule.forChild(routes),
+    RouterModule.forRoot(userRoutes),
     CommonModule,
-    BrowserModule,
     FormsModule,
     CommonModule,
     AppRoutingModule,
@@ -57,6 +61,8 @@ const routes: Routes = [
     MatSortModule,
     MatIconModule,
     MatButtonModule,
+    SharedModule
+
   ],
 })
 export class UserModule {

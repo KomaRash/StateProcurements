@@ -4,7 +4,7 @@ import OKRBParser.domain.position.{PositionId, UserId}
 import tsec.authentication.TSecBearerToken
 import tsec.common.SecureRandomId
 
-trait AuthRepositoryAlgebra[F[_]] extends RepositoryAlgebra[F] {
+trait AuthRepositoryAlgebra[F[_]] {
   def update(v: TSecBearerToken[UserId]): F[TSecBearerToken[UserId]]
 
   def put(elem: TSecBearerToken[PositionId]): F[TSecBearerToken[PositionId]]

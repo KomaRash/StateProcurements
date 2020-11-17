@@ -49,4 +49,11 @@ export class AuthService {
     console.log(localStorage.getItem('token'))
     return localStorage.getItem('token')
   }
+
+  isUser() {
+    return 'User' === (localStorage.getItem('position'))
+  }
+  isAdmin() {
+    return 'Director' === (localStorage.getItem('position'))
+  }
 }

@@ -32,7 +32,7 @@ class PostgresAuthRepositoryInterpreter[F[_] : Sync](tx: Transactor[F])
     insert(elem).run.transact(tx).as(elem)
   }
 
-  override def maxThreadPool(): Int = ???
+ // override def maxThreadPool(): Int = ???
 
   override def update(v: TSecBearerToken[UserId]): F[TSecBearerToken[UserId]] = {
     deleteFromTable(v.identity).run.transact(tx).flatMap(_ => put(v))

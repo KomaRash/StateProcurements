@@ -1,6 +1,6 @@
 package OKRBParser.domain.position
 
-trait UserRepositoryAlgebra[F[_]] extends RepositoryAlgebra[F] {
+trait UserRepositoryAlgebra[F[_]] {
   def getUserList: F[List[User]]
 
   def getUser(id: UserId): F[Option[User]]
