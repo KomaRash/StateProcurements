@@ -18,7 +18,6 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {UserGuard} from "../../../guards/user.guard";
 import { CreatePurchaseComponent } from './create-purchase/create-purchase.component';
-import {PurchaseServiceModule} from "../purchase-service.module";
 import {SharedModule} from "../shared/shared.module";
 
 export const userRoutes: Routes = [
@@ -34,7 +33,8 @@ export const userRoutes: Routes = [
     canActivate: [UserGuard],
     children: [
       {path: '', component: PurchaseListComponent},
-      {path: ':id', component: PurchaseDetailComponent}
+      {path: 'create', component: CreatePurchaseComponent},
+      {path: ':id', component: PurchaseDetailComponent},
     ]
   },
 ]

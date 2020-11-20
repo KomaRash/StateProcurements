@@ -24,7 +24,7 @@ class DocumentEndpoints[F[_] : ConcurrentEffect : Monad](service: DocumentServic
   }
 
   private def uploadDocument: AuthEndpoint[F, Token] = {
-    case req@POST -> Root / id asAuthed user => for {
+    case req@POST -> Root / "purchases" / id asAuthed user => for {
       value <- req.request.decodeWith(multipart[F], strict = true) { request =>
         request.parts.map { part =>
           service.uploadDocument(part.body, part.filename.get, part.name.get, id.toIntOption, user)

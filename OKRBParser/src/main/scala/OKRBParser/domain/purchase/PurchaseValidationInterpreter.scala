@@ -1,6 +1,7 @@
 package OKRBParser.domain.purchase
 
 import OKRBParser.domain.purchase.PurchaseStatus.CreatedPurchase
+import OKRBParser.domain.purchase.purchaseLot.PurchaseLot
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
@@ -39,7 +40,7 @@ class PurchaseValidationInterpreter[F[_] : Monad](repository: PurchaseRepository
     purchase.purchaseId match {
       case Some(purchaseId) => EitherT.fromOptionF(repository.
         getPurchaseWithLots(purchaseId), PurchaseNotFound).
-        ensure(NotCorrectDataPurchase) { p => purchase.equals(p) }.as(())
+        ensure(NotCorrectDataPurchase) { p => purchase.purchaseLots.length==p.purchaseLots.length }.as(())
       case None => EitherT.fromEither(Left(NotCorrectDataPurchase))
     }
 

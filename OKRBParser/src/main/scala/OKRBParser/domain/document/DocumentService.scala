@@ -29,8 +29,8 @@ class DocumentService[F[_] : Sync : Monad](repository: DocumentRepositoryAlgebra
       DocumentInfo(
         name.head, name.lastOption.getOrElse(""),
         link, description
-      ),
-      body, purchaseId
+      )
+      , purchaseId,None,body
     ))
     _ <- fileSystem.saveDocument(doc).compile.toVector
     result <- repository.saveDocument(doc)

@@ -4,7 +4,8 @@ import java.util.Date
 
 import OKRBParser.domain.okrb.OKRBProduct
 import OKRBParser.domain.position.{PositionId, UserId}
-import OKRBParser.domain.purchase._
+import OKRBParser.domain.purchase.{purchaseLot, _}
+import OKRBParser.domain.purchase.purchaseLot.{PurchaseLot, PurchaseLotStatus}
 import cats.data.OptionT
 import cats.effect.Sync
 import cats.implicits._
@@ -16,7 +17,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 
 object PurchaseSql {
-  implicit val writePurchaseLots: Write[(PurchaseLot, Int)] = Write[(Float, Date, String, Option[Int], Int, String)].contramap(lot => (
+  implicit val writePurchaseLots: Write[(PurchaseLot, Int)] = Write[(Float,java.util.Date, String, Option[Int], Int, String)].contramap(lot => (
     lot._1.amount, lot._1.deadline.toDate,
     lot._1.name, lot._1.okrb.okrbId,
     lot._2, lot._1.lotStatus.toString))
@@ -30,23 +31,13 @@ object PurchaseSql {
           List(),
           p._1.some)
     }
-  /**
-   * sql"""select  p.purchaselotid,p.deadline,p.lotamount,
-   * |p.lotname,p.purchaseLotStatus,
-   * |o.productid,o.section,
-   * |o.class,o.subcategories,
-   * |o.groupings,
-   * |o.name from purchaselot as p
-   * |  natural join okrb as o
-   * |  where purchaseid=$purchaseId""".stripMargin.
-   * query[PurchaseLot]
-   */
+
   implicit val readPurchaseLot: Read[PurchaseLot] = Read[(Int, Date, Float,
     String, String,
     Int, Int,
     Int, Int,
     Int, String)].map { l =>
-    PurchaseLot(
+    purchaseLot.PurchaseLot(
       OKRBProduct(
         l._7, l._8, l._9,
         l._10, l._11, l._6.some),
@@ -95,10 +86,10 @@ object PurchaseSql {
   }
 
   def insertLots(purchaseLots: List[PurchaseLot], purchaseId: PurchaseId): doobie.ConnectionIO[PurchaseId] = {
+
     val sql =
-      sql"""insert into purchaselot ( lotamount,deadline,
-           | lotname,productid,
-           | purchaseid,purchaselotstatus) values (?,?,?,?,?,?);""".stripMargin.toString()
+      s"""insert into purchaselot ( lotamount,deadline, lotname,
+         |productid,purchaseid,purchaselotstatus ) values (?,?,?,?,?,?)""".stripMargin
     Update[(PurchaseLot, Int)](sql).updateMany(purchaseLots.map((_, purchaseId)))
   }
 
@@ -142,11 +133,10 @@ class PostgresPurchaseRepositoryInterpreter[F[_] : Sync](tx: Transactor[F])
   }
 
   override def addLots(purchaseId: Int, purchaseLots: List[PurchaseLot]): F[Option[Purchase]] = {
+    println(purchaseLots)
     for {
       _ <- insertLots(purchaseLots, purchaseId).transact(tx)
-      purchase <- getPurchase(purchaseId)
-      purchaseLots <- getPurchaseLots(purchaseId)
-      p = purchase.map(_.copy(purchaseLots = purchaseLots))
+      p<-getPurchaseWithLots(purchaseId)
     } yield p
 
   }
@@ -179,12 +169,14 @@ class PostgresPurchaseRepositoryInterpreter[F[_] : Sync](tx: Transactor[F])
   }
 
   override def getPurchaseLots(id: PurchaseId): F[List[PurchaseLot]] = {
+
     selectPurchaseLots(id).
       to[List].
       transact(tx)
   }
 
   override def getPurchaseWithLots(id: PurchaseId): F[Option[Purchase]] = {
+
     for {
       purchase <- getPurchase(id)
       purchaseLots <- getPurchaseLots(id)

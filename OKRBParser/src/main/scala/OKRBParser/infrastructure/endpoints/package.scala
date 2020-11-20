@@ -3,7 +3,8 @@ package OKRBParser.infrastructure
 import OKRBParser.domain.document.DocumentInfo
 import OKRBParser.domain.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User, UserId, UsernamePasswordCredentials}
-import OKRBParser.domain.purchase.{Purchase, PurchaseInfo, PurchaseLot}
+import OKRBParser.domain.purchase.purchaseLot.PurchaseLot
+import OKRBParser.domain.purchase.{Purchase, PurchaseInfo}
 import io.circe._
 import io.circe.generic.semiauto._
 import io.circe.syntax._

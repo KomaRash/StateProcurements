@@ -7,7 +7,6 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {AuthModule} from "./modules/auth/auth.module";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AuthInterceptor} from "./services/auth.interceptor";
-import { CreateLotComponent } from './modules/create-purchase/create-lot/create-lot.component';
 import {FormsModule} from "@angular/forms";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule} from "@angular/material/dialog";
@@ -18,7 +17,6 @@ import {PurchaseServiceModule} from "./modules/purchase-service/purchase-service
 @NgModule({
   declarations: [
     AppComponent,
-    CreateLotComponent,
   ],
   imports: [
 

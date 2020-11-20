@@ -30,12 +30,11 @@ class PostgresDocumentRepositoryInterpreter[F[_] : Sync](tx: Transactor[F]) exte
 
 object DocumentSQL {
   implicit val readDocument: Read[Document] =
-    Read[(Int, String, Array[Byte], String, String, String, Int)].map {
+    Read[(Int, String, String, String, String, Int)].map {
       doc =>
         Document(
-          DocumentInfo(doc._2, doc._4, doc._6,
-            doc._5),
-          ByteVector(doc._3), doc._7.some,
+          DocumentInfo(doc._2, doc._4, doc._5,
+            doc._4), doc._6.some,
           doc._1.some
         )
 
@@ -52,9 +51,9 @@ object DocumentSQL {
   def selectDocument(link: String) = sql"""Select * from documents where documentlink = $link""".query[Document]
 
   def insert(document: Document): doobie.Update0 =
-    sql"""insert into documents(documentname, documentbody, extensions, descriptions, documentlink, purchaseid)
+    sql"""insert into documents(documentname, extensions, descriptions, documentlink, purchaseid)
          | values(
-         | ${document.documentInfo.documentName},${document.body.toArray},
+         | ${document.documentInfo.documentName},
          | ${document.documentInfo.extensions},${document.documentInfo.descriptions},
          | ${document.documentInfo.sourceLink},${document.purchaseId.get})""".stripMargin.update
 }

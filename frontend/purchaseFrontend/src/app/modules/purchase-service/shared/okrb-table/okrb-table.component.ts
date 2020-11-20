@@ -1,12 +1,11 @@
-import {AfterViewInit, Component, ElementRef, Input, Output, ViewChild} from '@angular/core';
-import {OKRBProduct} from "../../models/OKRBProduct";
-import {OkrbService} from "../../services/okrb.service";
+import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
-import {MatSort} from "@angular/material/sort";
+import {OKRBProduct} from "../../../../models/OKRBProduct";
 import {MatPaginator} from "@angular/material/paginator";
-import {fromEvent, merge, Observable, of} from "rxjs";
+import {MatSort} from "@angular/material/sort";
+import {OkrbService} from "../../../../services/okrb.service";
+import {merge, of} from "rxjs";
 import {catchError, delay, map, startWith, switchMap} from "rxjs/operators";
-import { EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-okrb-table',
@@ -35,7 +34,7 @@ export class OkrbTableComponent implements AfterViewInit {
 
 
   constructor(public okrbService: OkrbService) {
-  this.onChanged= new EventEmitter<OKRBProduct>();
+    this.onChanged= new EventEmitter<OKRBProduct>();
 
   }
 
@@ -72,4 +71,3 @@ export class OkrbTableComponent implements AfterViewInit {
   }
 
 }
-

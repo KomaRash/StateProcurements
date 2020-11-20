@@ -8,12 +8,12 @@
         <app-purchase-info [purchase]="purchase" [enableEdit]="false"></app-purchase-info>
       </div>
       <div class="col-sm-9 ">
-        <app-purchase-lots-table [purchaseLots]="purchase.purchaseLots" [updateTable]="false"></app-purchase-lots-table>
+        <app-purchase-lots-table [purchaseLots]="purchase.purchaseLots" [update]="false" [add]="false"></app-purchase-lots-table>
       </div>
     </div>
     <div class="row justify-content-md-center">
       <div class="col-lg-7">
-        <app-purchase-document-list [documentList]="documentInfoList"></app-purchase-document-list>
+        <app-purchase-document-list [documentList]="documentInfoList" [purchaseId]="purchase.purchaseId"></app-purchase-document-list>
       </div>
     </div>
   </ng-template>

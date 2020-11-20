@@ -1,10 +1,14 @@
 import {OKRBProduct} from "./OKRBProduct";
 
-export interface PurchaseLot {
-    okrb: OKRBProduct,
-    deadline: Date,
-    amount: number,
-    name: String,
-    purchaseLotStatus:String,
-    lotId?: number
+export class PurchaseLot {
+  okrb: OKRBProduct;
+  deadline: Date;
+  amount: number;
+  name: String;
+  lotStatus: String;
+  lotId?: number
+  constructor() {
+    this.lotStatus="CreatedLot"
+    this.lotId=-1
+  }
 }

@@ -1,0 +1,31 @@
+<h1 mat-dialog-title>Создание лота для закупки</h1>
+<div mat-dialog-content>
+  <form [formGroup]="form">
+  <p class="form-field-lot">
+    <mat-form-field appearance="fill">
+      <mat-label>Описание лота</mat-label>
+      <textarea matInput formControlName="name" [(ngModel)]="data.name"></textarea>
+      <mat-hint>Содержит краткую информация о лоте</mat-hint>
+    </mat-form-field>
+  </p>
+  <p class="form-field-lot">
+    <mat-form-field  appearance="outline">
+      <mat-label>Введите сумму товара</mat-label>
+      <input type="number" matInput formControlName="amount" placeholder="Сумма" [(ngModel)]="data.amount">
+      <mat-hint>Сумма в белорусских рублях</mat-hint>
+    </mat-form-field>
+  </p>
+  <p class="form-field-lot">
+    <mat-form-field   appearance="outline">
+      <mat-label>Дата окончания закупки лота</mat-label>
+      <input type="date" matInput  formControlName="deadline" [(ngModel)]="data.deadline">
+      <mat-hint>Сумма в белорусских рублях</mat-hint>
+    </mat-form-field>
+  </p>
+  </form>
+</div>
+<app-okrb-table (onChanged)="onChanged($event)"></app-okrb-table>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button (click)="okClick()" dkFocusInitial>Ok</button>
+</div>

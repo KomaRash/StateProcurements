@@ -40,7 +40,10 @@ export class PurchaseInfoComponent implements OnInit {
         date: this.purchase.purchaseInfo.dateOfPurchase
       })
     })
-    this.purchaseForm.disable();
+    if(!this.enableEdit)
+      this.purchaseForm.disable()
+    else
+      this.purchaseForm.enable();
   }
 }
 

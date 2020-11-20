@@ -10,7 +10,7 @@ export class AuthInterceptor implements HttpInterceptor{
     let request = req.clone({
       setHeaders: {
         Authorization: `${this.auth.getToken()}`,
-        'Content-Type': 'application/json',
+
         'Access-Control-Allow-Origin':appConfig.url,
         'Access-Control-Allow-Headers': 'Authorization'
       }

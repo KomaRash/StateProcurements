@@ -1,6 +1,7 @@
 package OKRBParser.domain.purchase
 
 import OKRBParser.domain.position.{PositionId, UserId}
+import OKRBParser.domain.purchase.purchaseLot.PurchaseLot
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
@@ -41,10 +42,10 @@ class PurchaseService[F[_]](repository: PurchaseRepositoryAlgebra[F],
     } yield saved
   }
 
-  def confirmCreatePurchase(purchase: Purchase)(implicit M: Monad[F]): EitherT[F, PurchaseError, Option[Purchase]] = {
+  def confirmCreatePurchase(purchaseId: Option[PurchaseId])(implicit M: Monad[F]): EitherT[F, PurchaseError, Option[Purchase]] = {
     for {
-      _ <- validation.compare(purchase)
-      id <- EitherT.fromOptionF(purchase.purchaseId.pure[F], PurchaseNotFound)
+      _ <- validation.exist(purchaseId)
+      id <- EitherT.fromOptionF(purchaseId.pure[F], PurchaseNotFound)
       purchase <- EitherT.liftF(repository.setStatus(PurchaseStatus.Execution, id))
     } yield purchase
   }

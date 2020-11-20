@@ -4,6 +4,7 @@ import OKRBParser.domain.auth.{Auth, AuthService}
 import OKRBParser.domain.okrb.OKRBProduct
 import OKRBParser.domain.position.{Position, User}
 import OKRBParser.domain.purchase._
+import OKRBParser.domain.purchase.purchaseLot.PurchaseLot
 import cats.Monad
 import cats.effect.ConcurrentEffect
 import cats.implicits._
@@ -47,16 +48,8 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
   }
 
   private def createPurchase: AuthEndpoint[F, Token] = {
-    case req@POST -> Root  asAuthed user =>
-      (for {
-        purchase <- req.request.as[Purchase]
-        p <- service.createPurchase(purchase, user.position.positionId).value
-      } yield p).flatMap {
-        case Left(PurchaseAlreadyExists(purchase)) => Conflict()
-        case Right(value) => Ok(value)
-      }
-    case req@POST -> Root  / id / "lots" asAuthed user =>
-      (for {
+
+    case req@POST -> Root  / id / "lots" asAuthed user => (for {
         lots <- req.request.as[List[PurchaseLot]]
         p <- service.addLots(Try(id.toInt).toOption, lots).value
       } yield p).flatMap {
@@ -82,10 +75,9 @@ class PurchaseEndpoints[F[_] : ConcurrentEffect : Monad](service: PurchaseServic
         case Left(PurchaseLotNotFound) => NotFound()
         case Left(NotCorrectDataPurchase) => UnprocessableEntity()
       }
-    case req@GET -> Root  asAuthed user =>
+    case req@PUT -> Root/id/"confirm"  asAuthed user =>
       val purchase = for {
-        purchase <- req.request.as[Purchase]
-        p <- service.confirmCreatePurchase(purchase).value
+        p <- service.confirmCreatePurchase(id.toIntOption).value
       } yield p
       purchase.flatMap {
         case Left(PurchaseNotFound) | Right(None) => NotFound()

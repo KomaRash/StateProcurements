@@ -1,6 +1,7 @@
 package OKRBParser.domain.purchase
 
 import OKRBParser.domain.position.{PositionId, UserId}
+import OKRBParser.domain.purchase.purchaseLot.PurchaseLot
 import cats.data.OptionT
 
 trait PurchaseRepositoryAlgebra[F[_]]{

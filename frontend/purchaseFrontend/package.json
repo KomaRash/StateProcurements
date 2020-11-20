@@ -21,10 +21,12 @@
     "@angular/platform-browser": "~10.1.6",
     "@angular/platform-browser-dynamic": "~10.1.6",
     "@angular/router": "~10.1.6",
+    "@types/filesaver": "0.0.30",
     "moment": "^2.29.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.10.2",
+    "@types/file-saver": "^2.0.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1001.7",

@@ -1,34 +1,42 @@
-<div *ngIf="documentList.length!=0;else action">
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <div class="my-3 p-3 bg-white rounded box-shadow">
-        <h6 class="border-bottom border-gray pb-2 mb-0">Документы</h6>
-      </div>
-    </mat-expansion-panel-header>
-    <ng-template matExpansionPanelContent>
-      <div>
-        <div  *ngFor="let doc of documentList;let i = index" class="media text-muted pt-3">
-          <img class="mr-2 rounded" data-holder-rendered="true" style="width: 32px; height: 32px;">
-          <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-            <div class="d-flex justify-content-between align-items-center w-100">
-              <strong class="text-gray-dark">{{(i + 1).toString() + ". " + doc.documentName}}</strong>
-              <a (click)="download(doc.sourceLink)">скачать</a>
-            </div>
-            <span class="d-block">{{doc.descriptions}}</span>
-            <span class="d-block">{{doc.extensions + " файл"}}</span>
-          </div>
+<div>
+  <div *ngIf="documentList.length!=0;else action">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <div class="my-3 p-3 bg-white rounded box-shadow">
+          <h6 class="border-bottom border-gray pb-2 mb-0">Документы</h6>
         </div>
-        <small class="d-block text-right mt-3">
-          <a href="#">Загрузкить файл</a>
-        </small>
+      </mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <div>
+          <div *ngFor="let doc of documentList;let i = index" class="media text-muted pt-3">
+            <img class="mr-2 rounded" data-holder-rendered="true" style="width: 32px; height: 32px;">
+            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+              <div class="d-flex justify-content-between align-items-center w-100">
+                <strong class="text-gray-dark">{{(i + 1).toString() + ". " + doc.documentName}}</strong>
+                <a type="button"(click)="download(doc)">скачать</a>
+              </div>
+              <span class="d-block">{{doc.descriptions}}</span>
+              <span class="d-block">{{doc.extensions + " файл"}}</span>
+            </div>
+          </div>
+          <small class="d-block text-right mt-3">
+            <a type="button" (click)="handleFileInput()">Загрузкить файл</a>
+          </small>
+        </div>
+      </ng-template>
+    </mat-expansion-panel>
+  </div>
+  <div>
+    <ng-template #action>
+      <div class="media text-muted pt-3">
+        <strong class="label label-default">Не добавлено ни одного документа</strong>
+      </div>
+      <div>
+        <label for="file">Choose File</label>
+        <input type="button"
+               id="file"
+               (click)="handleFileInput()">
       </div>
     </ng-template>
-  </mat-expansion-panel>
-</div>
-<div>
-  <ng-template #action>
-    <div class="media text-muted pt-3">
-      <strong class="label label-default">Не добавлено ни одного документа</strong>
-    </div>
-  </ng-template>
+  </div>
 </div>

@@ -1,4 +1,4 @@
-package OKRBParser.domain.purchase
+package OKRBParser.domain.purchase.purchaseLot
 
 import enumeratum._
 

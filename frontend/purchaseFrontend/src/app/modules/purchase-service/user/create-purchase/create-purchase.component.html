@@ -1,0 +1,23 @@
+<div class="nav-scroller bg-white box-shadow">
+  <nav class="nav nav-underline">
+    <a type="button" class="nav-link" [class.disabled]="isCanSave()" (click)="save()">Сохранить Закупку</a>
+    <a type="button" class="nav-link" [class.disabled]="!saved" (click)="confirm()">Подтвердить начало выполнения</a>
+    <a type="button" class="nav-link" [class.disabled]="!saved" (click)="delete()">Удалить вариант</a>
+  </nav>
+</div>
+{{purchase.toJson()}}
+<div class="container ">
+    <div class="row justify-content-md-center">
+      <div class="col-sm-3">
+        <app-purchase-info [purchase]="purchase" [enableEdit]="edit"></app-purchase-info>
+      </div>
+      <div class="col-sm-9 ">
+        <app-purchase-lots-table [purchaseLots]="purchase.purchaseLots" [add]="true" [update]="edit"></app-purchase-lots-table>
+      </div>
+    </div>
+    <div class="row justify-content-md-center">
+      <div class="col-lg-7">
+
+      </div>
+    </div>
+</div>

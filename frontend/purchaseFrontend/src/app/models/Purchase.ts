@@ -15,9 +15,12 @@ export class Purchase{
             dateOfPurchase:new Date()
         }
     }
+    toJson():string{
+      return JSON.stringify(this)
+    }
 }
-export interface PurchaseInfo{
-    dateOfPurchase:Date,
-    positionId?:number,
+export class PurchaseInfo{
+    dateOfPurchase:Date;
+    positionId?:number;
     procedureName:String
 }

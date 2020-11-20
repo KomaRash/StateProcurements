@@ -1,5 +1,6 @@
 package OKRBParser.domain.purchase
 
+import OKRBParser.domain.purchase.purchaseLot.PurchaseLot
 import cats.data.EitherT
 
 trait PurchaseValidationAlgebra[F[_]] {

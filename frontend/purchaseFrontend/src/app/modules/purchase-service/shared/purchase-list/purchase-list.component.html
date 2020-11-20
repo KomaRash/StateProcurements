@@ -1,0 +1,19 @@
+<section class="purchase-list-container row">
+  <div>
+    <ng-container *ngFor="let purchase of purchases">
+      <div>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <h5 class="purchase">{{purchase.description}}</h5>
+            <h5 class="purchaseStatus">Статус закупки:{{purchase.purchaseStatus}}</h5>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <p class="purchase">дата создания:{{purchase.purchaseInfo.dateOfPurchase}}</p>
+            <p class="purchase">тип закупки - {{purchase.purchaseInfo.procedureName}}</p>
+            <a href="user/purchases/{{purchase.purchaseId}}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Подробнее</a>
+          </ng-template>
+        </mat-expansion-panel>
+      </div>
+    </ng-container>
+  </div>
+</section>

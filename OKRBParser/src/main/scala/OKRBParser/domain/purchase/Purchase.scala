@@ -2,6 +2,7 @@ package OKRBParser.domain.purchase
 
 
 import OKRBParser.domain.position.PositionId
+import OKRBParser.domain.purchase.purchaseLot.PurchaseLot
 import org.joda.time.DateTime
 
 case class Purchase(purchaseInfo: PurchaseInfo,
