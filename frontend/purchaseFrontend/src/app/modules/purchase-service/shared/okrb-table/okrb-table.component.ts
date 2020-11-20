@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Output, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {OKRBProduct} from "../../../../models/OKRBProduct";
 import {MatPaginator} from "@angular/material/paginator";
@@ -6,6 +6,7 @@ import {MatSort} from "@angular/material/sort";
 import {OkrbService} from "../../../../services/okrb.service";
 import {merge, of} from "rxjs";
 import {catchError, delay, map, startWith, switchMap} from "rxjs/operators";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-okrb-table',
@@ -20,31 +21,33 @@ export class OkrbTableComponent implements AfterViewInit {
   isRateLimitReached = false;
   columnsToDisplay: string[] = ['section', 'class', 'subCategories', 'groupings', 'name'];
   expandedElement: OKRBProduct;
-  searchField:string="";
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  searchLine: string = "";
+  @Output() searchField = new EventEmitter<string>()
+  @Output() onChanged;
+  formGroup: FormGroup;
 
-  @Output() onChanged ;
-
-  setOKRB(increased:OKRBProduct) {
-    this.expandedElement=increased;
+  setOKRB(increased: OKRBProduct) {
+    this.expandedElement = increased;
     this.onChanged.emit(increased);
   }
 
 
-
-  constructor(public okrbService: OkrbService) {
-    this.onChanged= new EventEmitter<OKRBProduct>();
+  constructor(private okrbService: OkrbService, private formBuilder: FormBuilder) {
+    this.onChanged = new EventEmitter<OKRBProduct>();
+    this.formGroup = formBuilder.group({filter: ['']});
 
   }
 
   ngAfterViewInit() {
-    merge(this.sort.sortChange, this.paginator.page).pipe(
+    merge(this.sort.sortChange, this.paginator.page, this.searchField).pipe(
       startWith({}), delay(0), switchMap(() => {
         this.isLoadingResults = true;
         return this.okrbService.getOKRBList(
           this.paginator.pageIndex,
-          this.pageSize,this.searchField
+          this.pageSize, this.searchLine
         )
       }),
       map(data => {
@@ -59,15 +62,21 @@ export class OkrbTableComponent implements AfterViewInit {
         this.isRateLimitReached = true;
         return of([]);
       }),
-      map(data=> {
-        this.okrbService.getLength(this.searchField).
-        subscribe(x=>{this.resultsLength=x})
+      map(data => {
+        this.okrbService.getLength(this.searchLine).subscribe(x => {
+          this.resultsLength = x
+        })
         return data
       })
     ).subscribe(data => {
+
       return this.dataSource.data = data;
     });
 
   }
 
+  onSearch($event: any) {
+    this.searchLine = this.formGroup.get("filter").value
+    this.searchField.emit()
+  }
 }

@@ -6,6 +6,17 @@
         GitHub's API rate limit has been reached. It will be reset in one minute.
       </div>
     </div>
+    <form [formGroup]="formGroup">
+      <input
+        type="text"
+        class="form-control"
+        name="searchString"
+        placeholder="Type to search..."
+        formControlName="filter"
+        [ngModel]="searchLine"
+        (ngModelChange)="onSearch($event)"
+      />
+    </form>
     <table [dataSource]="dataSource" class="example-table" mat-table matSort matSortActive="created"
            matSortDirection="asc" matSortDisableClear>
       <tr *matHeaderRowDef="columnsToDisplay" mat-header-row></tr>
